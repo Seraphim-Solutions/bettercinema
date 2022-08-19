@@ -9,6 +9,7 @@ from rich.table import Table
 import xml.etree.ElementTree as ET
 import hashlib
 import json
+import time
 
 from api.api import BetterCinemaAPI
 from handlers.request_parser import Handler
@@ -31,6 +32,13 @@ class Cli():
         self.movie_negative_votes = []
         self.movie_links = []
         self.page = 0
+        self.user_dict = {}
+        users = self.db.read_creds()
+        if users != []:
+            for username, hash in users:
+                self.user_dict.update({username: hash})
+        print(self.user_dict)
+
         # load config/config.json
         with open('config/config.json') as config_file:
             self.config = json.load(config_file)
@@ -40,33 +48,42 @@ class Cli():
         self.color_warning = self.config['colors']['warning']
         self.color_info = self.config['colors']['info']
         self.color_primary = self.config['colors']['primary']
+    
+    def get_salt(self, username):
+        salt_xml = self.rp.salt(username)
+        xml = ET.fromstring(salt_xml)
+        if not xml.find('status').text == 'OK':
+            print("User not found.")
+            self.login()
+        else:
+            pass
+        salt = xml.find('salt').text
+        return salt
 
     def login(self):
         if self.db.read_creds() == []:
             username = inquirer.text(message="Username: ").execute()
             password = inquirer.secret(message="Password: ").execute()
-            salt_xml = self.rp.salt(username)
-            xml = ET.fromstring(salt_xml)
-            if not xml.find('status').text == 'OK':
-                print("User not found.")
-                self.login()
-            else:
-                pass
-            salt = xml.find('salt').text
+            salt = self.get_salt(username)
             password = hashlib.sha1(md5crypt(password, salt=salt).encode('utf-8')).hexdigest()
+
         else:
-            use_logged_account = inquirer.text(message=f"You have already logged in as {self.db.read_creds()[0][0]}. Do you want to use this account? [y/n]: ").execute()
-            if use_logged_account == "y":
-                username = self.db.read_creds()[0][0]
-                password = self.db.read_creds()[0][1]
-            if use_logged_account == "n":
+            use_sotred_account = inquirer.confirm(message="Use stored account?: ").execute()
+            if use_sotred_account:
+                user_choice = inquirer.select(message="Choose account: ", choices=[
+                    *self.user_dict
+                ]).execute()
+
+                username = user_choice
+                password = self.user_dict[username]
+
+
+            if use_sotred_account == False:
                 username = inquirer.text(message="Username: ").execute()
+                salt = self.get_salt(username)
                 password = inquirer.secret(message="Password: ").execute()
-                salt_xml = self.rp.salt(username)
-                xml = ET.fromstring(salt_xml)
-                salt = xml.find('salt').text
                 password = hashlib.sha1(md5crypt(password, salt=salt).encode('utf-8')).hexdigest()
-        
+
         wst_xml = self.rp.login(username, password)
         xml = ET.fromstring(wst_xml)
         
@@ -75,7 +92,8 @@ class Cli():
             self.login()
             
         self.wst = xml.find('token').text
-        if self.db.read_creds() != [(username, password)]:
+        
+        if username not in self.user_dict.keys():
             self.db.add_creds(username, password)
         os.system('cls' if os.name == 'nt' else 'clear')
         self.search()
