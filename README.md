@@ -98,8 +98,8 @@ If can’t find what you have been looking for, you can try command `more` for m
 
 - [x] Add option for user to customize colors
 
-## In progress
+- [x] Add multi-account support
 
-- [ ] Add multi-account support
+## In progress
 
 - [ ] Improve interface
