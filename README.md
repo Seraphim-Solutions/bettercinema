@@ -94,10 +94,10 @@ If can’t find what you have been looking for, you can try command `more` for m
 
 - [x] Error handling
 
+- [x] Add option for user to customize colors
+
 ## In progress
 
 - [ ] Add multi-account support
 
 - [ ] Improve interface
-
-- [ ] Add option for user to customize colors
