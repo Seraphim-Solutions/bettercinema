@@ -67,12 +67,12 @@ If can't find what you have been looking for, you can try command `more` for mor
 ## Finished
 
 - [x] Fix 'more' command (implementing offset)
+- [x] Add more data to table (rating, etc.)
+- [x] Error handling
 
 ## In progress
 
 - [ ] Add multi-account support
 - [ ] Add download option
-- [ ] Add more data to table (rating, etc.)
 - [ ] Improve interface
 - [ ] Add option for user to select custom colors
-- [ ] Error handling
