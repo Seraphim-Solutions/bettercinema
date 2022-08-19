@@ -90,13 +90,13 @@ If can’t find what you have been looking for, you can try command `more` for m
 
 - [x] Add more data to the table (rating, etc.)
 
+- [x] Add download option
+
 - [x] Error handling
 
 ## In progress
 
 - [ ] Add multi-account support
-
-- [ ] Add download option
 
 - [ ] Improve interface
 
