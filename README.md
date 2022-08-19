@@ -102,4 +102,4 @@ If can’t find what you have been looking for, you can try command `more` for m
 
 ## In progress
 
-- [ ] Improve interface
+- [ ] Improve interface (long term goal)
