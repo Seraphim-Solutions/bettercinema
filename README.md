@@ -76,7 +76,7 @@ If you select Advanced Search these are inputs, the tool will ask you for:
 
 Selecting any of these search options will bring a table with results.
 
-![Result table for advanced search](https://i.imgur.com/7S8s5hH.png)
+![Result table for advanced search](https://i.imgur.com/VyB7uWP.png)
 
 This part is quite self-explanatory, to select a specific movie just type the index number of it and it will instantly trigger VLC to open with that specific file.
 
