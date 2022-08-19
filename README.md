@@ -75,3 +75,4 @@ If can't find what you have been looking for, you can try command `more` for mor
 - [ ] Add more data to table (rating, etc.)
 - [ ] Improve interface
 - [ ] Add option for user to select custom colors
+- [ ] Error handling
