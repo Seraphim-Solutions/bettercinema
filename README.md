@@ -64,8 +64,14 @@ This part is quite self-explanatory, to select specific movie just type index nu
 If can't find what you have been looking for, you can try command `more` for more results, or just try other filters in advanced search.
 
 # TODO
+## Finished
+
 - [x] Fix 'more' command (implementing offset)
+
+## In progress
+
 - [ ] Add multi-account support
 - [ ] Add download option
 - [ ] Add more data to table (rating, etc.)
 - [ ] Improve interface
+- [ ] Add option for user to select custom colors
