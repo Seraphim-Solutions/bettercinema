@@ -39,10 +39,12 @@ class BetterCinemaAPI():
         for x in range(len(data)):
             ident = data[x]["ident"]
             name = data[x]["name"]
+            postive_votes = data[x]["positive_votes"]
+            negative_votes = data[x]["negative_votes"]
             size = int(data[x]["size"])
             size = convert_size(size)
           
-            list.append([ident, name, size])
+            list.append([ident, name, size, postive_votes, negative_votes])
         return list
 
     def get_link(self, ident, wst):

@@ -1,3 +1,4 @@
+from textwrap import wrap
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
 import os
@@ -25,6 +26,8 @@ class Cli():
         self.movie_names = []
         self.movie_idents = []
         self.movie_sizes = []
+        self.movie_postive_votes = []
+        self.movie_negative_votes = []
         self.movie_links = []
         self.page = 0
 
@@ -34,9 +37,13 @@ class Cli():
             password = inquirer.secret(message="Password: ").execute()
             salt_xml = self.rp.salt(username)
             xml = ET.fromstring(salt_xml)
+            if not xml.find('status').text == 'OK':
+                print("User not found.")
+                self.login()
+            else:
+                pass
             salt = xml.find('salt').text
             password = hashlib.sha1(md5crypt(password, salt=salt).encode('utf-8')).hexdigest()
-            self.db.add_creds(username, password)
         else:
             use_logged_account = inquirer.text(message=f"You have already logged in as {self.db.read_creds()[0][0]}. Do you want to use this account? [y/n]: ").execute()
             if use_logged_account == "y":
@@ -49,11 +56,17 @@ class Cli():
                 xml = ET.fromstring(salt_xml)
                 salt = xml.find('salt').text
                 password = hashlib.sha1(md5crypt(password, salt=salt).encode('utf-8')).hexdigest()
-                self.db.add_creds(username, password)
         
         wst_xml = self.rp.login(username, password)
         xml = ET.fromstring(wst_xml)
+        
+        if not xml.find('status').text == 'OK':
+            print("Invalid credentials.")
+            self.login()
+            
         self.wst = xml.find('token').text
+        if self.db.read_creds() != [(username, password)]:
+            self.db.add_creds(username, password)
         os.system('cls' if os.name == 'nt' else 'clear')
         self.search()
 
@@ -102,18 +115,25 @@ class Cli():
             self.movie_idents.append(movie[0])
             self.movie_names.append(movie[1])
             self.movie_sizes.append(movie[2])
+            self.movie_postive_votes.append(movie[3])
+            self.movie_negative_votes.append(movie[4])
         
-        self.movie_table = Table(show_header=True, header_style="bold red")
-        self.movie_table.add_column("#", style="bold blue")
-        self.movie_table.add_column("Name", style="bold green")
-        self.movie_table.add_column("Size", style="bold yellow")
+        self.movie_table = Table(show_header=True, header_style="bold white", title="Search Results", title_justify="centre")
+        self.movie_table.add_column("#", style="bold blue", justify="middle")
+        self.movie_table.add_column("Name", style="bold green", justify="middle")
+        self.movie_table.add_column("Size", style="bold yellow", justify="middle")
+        self.movie_table.add_column("Votes", justify="middle", no_wrap=True)
         for i in range(len(self.movie_names)):
-            self.movie_table.add_row(str(i + 1), self.movie_names[i], self.movie_sizes[i])
+            self.movie_table.add_row(f"[bold blue]{str(i + 1)}[/]",
+            self.movie_names[i],
+            f"[bold yellow]{self.movie_sizes[i]}[/]",
+            (f"[bold green]{self.movie_postive_votes[i]}[/] [bold white]|[/] [bold red]{self.movie_negative_votes[i]}[/]"),
+            style=("bold white" if self.movie_postive_votes[i] == self.movie_negative_votes[i] else ("bold" if self.movie_postive_votes[i] >= self.movie_negative_votes[i] else "bold red")))
 
         console.print(self.movie_table)
-        self.select_movie_from_results()
+        self.select_item_from_results()
 
-    def select_movie_from_results(self):
+    def select_item_from_results(self):
         selected_movie = inquirer.text(message="Select movie [help for options]: ").execute()
         if selected_movie == "help":
             self.help()
@@ -124,9 +144,22 @@ class Cli():
         selected_movie_index = int(selected_movie) - 1
 
         movie_link = self.bc.get_link(ident=self.movie_idents[selected_movie_index], wst=self.wst)
-        self.player.play(movie_link)
-        # print(movie_link)
-    
+        self.selected_item_options(movie_link)
+        
+    def selected_item_options(self, movie_link):
+        item_options = inquirer.select(message="Select item options: ", choices=[
+            "Download",
+            "Play in VLC [Network Stream]"]).execute()
+        
+        if item_options == "Download":
+            filename = inquirer.text(message="Filename: ").execute()
+            self.rp.download(filename, movie_link)
+            self.search()
+
+        if item_options == "Play in VLC [Network Stream]":
+            self.player.play(movie_link)
+
+
     def more_results(self):
         self.page += 25
         self.resutl_list = self.bc.search(self.query, category="video", limit=25, offset=self.page)
@@ -134,7 +167,7 @@ class Cli():
 
     def help(self):
         print("Select movie by typing the number of the movie or 'more' for more results")
-        self.select_movie_from_results()
+        self.select_item_from_results()
 
 if __name__ == '__main__':
     pretty.install()

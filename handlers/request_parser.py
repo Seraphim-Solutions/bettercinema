@@ -1,4 +1,6 @@
 import requests
+import urllib
+import os 
 
 class Handler():
     def __init__(self):
@@ -25,3 +27,8 @@ class Handler():
         response = requests.request("POST", url, headers=headers, data=payload)
 
         return response.content
+    
+    def download(self, filename, url):
+        if not os.path.exists('downloads'):
+            os.makedirs('downloads')
+        urllib.request.urlretrieve(url, f'downloads/{filename}')
