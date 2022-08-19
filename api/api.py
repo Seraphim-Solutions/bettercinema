@@ -16,31 +16,30 @@ def convert_size(size_bytes):
 
 
 class BetterCinemaAPI():
-    def search(self, query, limit=25, category="", sort="largest"):
+    def search(self, query, limit=25, category="", offset=0, sort="largest"):
         url = "https://webshare.cz/api/search/"
 
         payload={
         'what': query,
-        'offset': 0,
+        'offset': offset,
         'limit': limit,
         'category': category,
         'sort': sort
-        }
-
-        headers = {
         }
 
         response = requests.request("POST", url, data=payload)
 
         xml = response.text
 
+        data = []
         data_dict = xmltodict.parse(xml)
-
+        temp_dict = data_dict['response']['file']
+        data.extend(temp_dict)
         list = []
-        for x in range(limit):
-            ident = data_dict["response"]["file"][x]["ident"]
-            name = data_dict["response"]["file"][x]["name"]
-            size = int(data_dict["response"]["file"][x]["size"])
+        for x in range(len(data)):
+            ident = data[x]["ident"]
+            name = data[x]["name"]
+            size = int(data[x]["size"])
             size = convert_size(size)
           
             list.append([ident, name, size])
