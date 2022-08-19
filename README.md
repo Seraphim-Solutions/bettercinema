@@ -100,4 +100,4 @@ If can’t find what you have been looking for, you can try command `more` for m
 
 - [ ] Improve interface
 
-- [ ] Add option for user to select custom colors
+- [ ] Add option for user to customize colors
