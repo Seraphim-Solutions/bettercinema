@@ -26,7 +26,7 @@ class Cli():
         self.movie_idents = []
         self.movie_sizes = []
         self.movie_links = []
-        self.page = 25
+        self.page = 0
 
     def login(self):
         if self.db.read_creds() == []:
@@ -39,10 +39,10 @@ class Cli():
             self.db.add_creds(username, password)
         else:
             use_logged_account = inquirer.text(message=f"You have already logged in as {self.db.read_creds()[0][0]}. Do you want to use this account? [y/n]: ").execute()
-            if use_logged_account == "y" or "Y" or "yes" or "Yes" or "YES":
+            if use_logged_account == "y":
                 username = self.db.read_creds()[0][0]
                 password = self.db.read_creds()[0][1]
-            else:
+            if use_logged_account == "n":
                 username = inquirer.text(message="Username: ").execute()
                 password = inquirer.secret(message="Password: ").execute()
                 salt_xml = self.rp.salt(username)
@@ -57,9 +57,9 @@ class Cli():
         os.system('cls' if os.name == 'nt' else 'clear')
         self.search()
 
-    def search_query(self, query, limit=25, category="video", sort="largest"):
+    def search_query(self, query, limit=25, category="video", sort="largest", offset=0):
         self.query = query
-        self.resutl_list = self.bc.search(self.query, limit=limit, category=category, sort=sort)
+        self.resutl_list = self.bc.search(self.query, limit=limit, category=category, offset=offset, sort=sort)
         
 
     def search(self):
@@ -128,7 +128,8 @@ class Cli():
         # print(movie_link)
     
     def more_results(self):
-        self.resutl_list = self.bc.search(self.query, category="video", limit=self.page)
+        self.page += 25
+        self.resutl_list = self.bc.search(self.query, category="video", limit=25, offset=self.page)
         self.list_movies()
 
     def help(self):
@@ -142,4 +143,3 @@ if __name__ == '__main__':
     os.system('cls' if os.name == 'nt' else 'clear')
     app = Cli()
     app.login()
-
