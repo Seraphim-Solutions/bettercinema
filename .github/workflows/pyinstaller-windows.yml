@@ -1,7 +1,6 @@
 name: Package Application with Pyinstaller (Windows)
 
-on:
-  release:
+on: [release]
 
 jobs:
   build:
