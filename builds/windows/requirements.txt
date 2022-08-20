@@ -1,0 +1,4 @@
+InquirerPy
+requests
+rich
+xmltodict
