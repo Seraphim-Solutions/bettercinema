@@ -39,10 +39,26 @@ class Cli():
         if users != []:
             for username, hash in users:
                 self.user_dict.update({username: hash})
-
-        # load config/config.json
-        with open('config/config.json') as config_file:
-            self.config = json.load(config_file)
+        self.config ={
+    "_comment": "you can find all usable colors here https://rich.readthedocs.io/en/stable/appendix/colors.html and styles here https://rich.readthedocs.io/en/stable/style.html",
+    "colors": {
+        "neutral": "bold white",
+        "primary": "bold blue",
+        "info": "bold light blue",
+        "good": "bold green",
+        "warning": "bold yellow",
+        "bad": "bold red"
+    }
+}
+        
+        if not os.path.exists('config'):
+            os.mkdir('config')
+        if not os.path.exists('config/config.json'):
+            with open('config/config.json', 'w') as f:
+                json.dump(self.config, f)
+        
+        with open('config/config.json', 'r') as f:
+            self.config = json.load(f)
         self.color_neutral = self.config['colors']['neutral']
         self.color_good = self.config['colors']['good']
         self.color_bad = self.config['colors']['bad']
