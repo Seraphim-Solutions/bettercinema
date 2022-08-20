@@ -18,6 +18,9 @@ jobs:
       uses: JackMcKew/pyinstaller-action-linux@main
       with:
         path: builds/linux
+    
+    - name: Rename Application
+      run: mv builds/linux/dist/linux/app builds/linux/dist/linux/BetterCinema_Linux
 
     - uses: actions/upload-artifact@v2
       with:
@@ -28,4 +31,4 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: builds/linux/dist/linux/app
+        files: builds/linux/dist/linux/BetterCinema_Linux

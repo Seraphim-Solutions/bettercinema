@@ -18,6 +18,9 @@ jobs:
       uses: JackMcKew/pyinstaller-action-windows@main
       with:
         path: builds/windows
+    
+    - name: Rename Application
+      run: mv builds/windows/dist/windows/app builds/windows/dist/windows/BetterCinema_Windows.exe
 
     - uses: actions/upload-artifact@v2
       with:
@@ -28,4 +31,4 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: builds/windows/dist/windows/app.exe
+        files: builds/windows/dist/windows/BetterCinema_Windows.exe
