@@ -1,22 +1,19 @@
-from time import sleep
 import os
 import platform
 
+import subprocess
+
 class Player():
     def __init__(self):
-        pass
-        
+        self.vlc_path = os.path.join("C:/",  "Program Files", "VideoLAN", "VLC", "vlc.exe")
+
+
     def play(self, url):
         if platform.system() == 'Windows':
-            os.system(f'start "%PROGRAMFILES%\VideoLAN\VLC\vlc.exe" {url}')
+            subprocess.run([f'{self.vlc_path}', url])
         elif platform.system() == 'Linux':
             os.system(f'vlc {url} --fullscreen')
         elif platform.system() == 'Darwin':
             os.system(f'/Applications/VLC.app/Contents/MacOS/VLC {url}')
         else:
             print('Not supported')
-        
-
-p = Player()
-
-

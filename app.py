@@ -173,7 +173,11 @@ class Cli():
         selected_movie_index = int(selected_movie) - 1
 
         movie_link = self.bc.get_link(ident=self.movie_idents[selected_movie_index], wst=self.wst)
-        self.selected_item_options(movie_link)
+        if movie_link == "Error 403":
+            print("No link found, maybe the file is password protected.")
+            self.select_item_from_results()
+        else:
+            self.selected_item_options(movie_link)
         
     def selected_item_options(self, movie_link):
         item_options = inquirer.select(message="Select item options: ", choices=[
