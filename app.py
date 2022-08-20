@@ -14,6 +14,7 @@ import time
 from api.api import BetterCinemaAPI
 from handlers.request_parser import Handler
 from handlers.vlc_handler import Player
+from handlers.infuse_handler import Player_Infuse
 from misc.md5Crypt import md5crypt
 from handlers.db_handler import db
 
@@ -177,7 +178,8 @@ class Cli():
     def selected_item_options(self, movie_link):
         item_options = inquirer.select(message="Select item options: ", choices=[
             "Download",
-            "Play in VLC [Network Stream]"]).execute()
+            "Play in VLC [Network Stream]",
+            "Play in Infuse [Apple only]"]]).execute()
         
         if item_options == "Download":
             filename = inquirer.text(message="Filename: ").execute()
@@ -186,6 +188,9 @@ class Cli():
 
         if item_options == "Play in VLC [Network Stream]":
             self.player.play(movie_link)
+            
+        if item_options == "Play in Infuse [Apple only]":
+            self.player_infuse.play(movie_link)
 
 
     def more_results(self):
