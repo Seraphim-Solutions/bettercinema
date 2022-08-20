@@ -1,6 +1,8 @@
 name: Package Application with Pyinstaller (Linux)
 
-on: [release]
+on:
+  release:
+    types: [created]
 
 jobs:
   build:
