@@ -20,7 +20,7 @@ jobs:
         path: builds/windows
     
     - name: Rename Application
-      run: mv builds/windows/dist/windows/app builds/windows/dist/windows/BetterCinema_Windows.exe
+      run: mv builds/windows/dist/windows/app.exe builds/windows/dist/windows/BetterCinema_Windows.exe
 
     - uses: actions/upload-artifact@v2
       with:
