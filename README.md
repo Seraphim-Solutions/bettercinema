@@ -6,12 +6,6 @@
 
 With this tool, you can easily search the contents of webshare and open them in VLC (again video related).
 
-### Support for other files and other functions? (Zips, Docs, Downloading, etc.)
-
-I will try to add more features including downloading files and working on a better interface.
-
-More in TODO list
-
 ### Why use this and not stream cinema? 
 
 Well, stream cinema has a manual database with movies, so some things aren’t there immediately, but they can be on webshare.
@@ -108,3 +102,6 @@ If can’t find what you have been looking for, you can try command `more` for m
 - [x] Fixed crashing when a file was private / password protected
 
 - [x] Fixed VLC not opening on windows
+
+
+## Have any suggestions? Open issue or contact me on Discord Danni#1965
