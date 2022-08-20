@@ -11,8 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Copy build files
-      run: |
-      rsync -av --exclude='builds' * builds/linux  
+      run: rsync -av --exclude='builds' * builds/linux  
     
     - name: Package Application
       uses: JackMcKew/pyinstaller-action-linux@main
