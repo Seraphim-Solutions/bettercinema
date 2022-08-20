@@ -179,7 +179,7 @@ class Cli():
         item_options = inquirer.select(message="Select item options: ", choices=[
             "Download",
             "Play in VLC [Network Stream]",
-            "Play in Infuse [Apple only]"]]).execute()
+            "Play in Infuse [Apple only]"]).execute()
         
         if item_options == "Download":
             filename = inquirer.text(message="Filename: ").execute()
