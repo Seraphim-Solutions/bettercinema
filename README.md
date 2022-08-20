@@ -22,7 +22,7 @@ Also, it feels quicker.
 
 ### VLC
 
-You’ll need the VLC folder in the path, because ‘Webshare Terminal’ uses VLC cmd commands.
+You’ll need the VLC folder in the path, because ‘BetterCinema’ uses VLC cmd commands.
 
 If you don’t know how to do so [here](https://www.vlchelp.com/add-vlc-command-prompt-windows/) is a step-by-step guide.
 
@@ -36,7 +36,7 @@ All libraries will be in requirements.txt for now
 
 # Usage
 
-Using ‘Webshare Terminal’ (just WT after) is quite simple.
+Using ‘BetterCinema’ (just WT after) is quite simple.
 
 The first time you open WT you’ll be asked for your webshare credentials.
 
