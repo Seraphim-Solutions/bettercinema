@@ -28,7 +28,7 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: builds/windows/dist/windows
-        asset_name: app.exe
+        file: builds/windows/dist/windows/app.exe
+        asset_name: BetterCinema_Win.exe
         tag: ${{ github.ref }}
         overwrite: true
