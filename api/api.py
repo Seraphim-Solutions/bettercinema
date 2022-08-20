@@ -3,7 +3,7 @@ import requests
 import re
 import xmltodict
 import math
-
+from xml.etree import ElementTree as ET
 
 def convert_size(size_bytes):
    if size_bytes == 0:
@@ -60,8 +60,13 @@ class BetterCinemaAPI():
 
         response = requests.request("POST", url, headers=headers, data=payload)
 
-        preparsed_link = response.text
+        # preparsed_link
+        xml = ET.fromstring(response.text)
+        if not xml.find('status').text == 'OK':
+            return "Error 403"
+        
+        else:
+            pass
 
-        link = re.search(r'<link>(.*)</link>', preparsed_link).group(1)
-
+        link = xml.find('link').text
         return link
