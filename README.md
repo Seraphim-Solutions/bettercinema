@@ -1,4 +1,4 @@
-# Bettercinema test
+# Bettercinema
 
 ## What is this?
 
