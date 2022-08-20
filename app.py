@@ -39,7 +39,6 @@ class Cli():
         if users != []:
             for username, hash in users:
                 self.user_dict.update({username: hash})
-        print(self.user_dict)
 
         # load config/config.json
         with open('config/config.json') as config_file:
