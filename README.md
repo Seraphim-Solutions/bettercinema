@@ -2,7 +2,7 @@
 
 ## What is this?
 
-‘BetterCinema’ is a CLI tool for searching webshare.cz focused mainly on videos. Inspired by streamcinema.
+‘BetterCinema’ is a CLI tool for searching webshare.cz focused mainly on videos. Inspired by [Stream Cinema Community](https://gitlab.com/stream-cinema-community).
 
 With this tool, you can easily search the contents of webshare and open them in VLC (again video related).
 
@@ -36,11 +36,11 @@ All libraries will be in requirements.txt for now
 
 # Usage
 
-Using ‘BetterCinema’ (just WT after) is quite simple.
+Using ‘BetterCinema’ (or just BC in short) is quite simple.
 
-The first time you open WT you’ll be asked for your webshare credentials.
+The first time you open BC you’ll be asked for your webshare credentials.
 
-After you login, username and your salted password hash will be stored in ‘data.db’, so you don’t have to log in every time you open WT.
+After you login, username and your salted password hash will be stored in ‘data.db’, so you don’t have to log in every time you open BC.
 
 ![Login preview](https://i.imgur.com/mdUsdnd.png)
 
