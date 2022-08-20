@@ -1,4 +1,3 @@
-from time import sleep
 import os
 import platform
 
@@ -11,6 +10,3 @@ class Player_Infuse():
             os.system(f'open "infuse://x-callback-url/play?url={url}"')
         else:
             print('Not supported')
-        
-
-p = Player_Infuse()
