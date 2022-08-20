@@ -16,9 +16,7 @@ Also, it feels quicker.
 
 ### VLC
 
-You’ll need the VLC folder in the path, because ‘BetterCinema’ uses VLC cmd commands.
-
-If you don’t know how to do so [here](https://www.vlchelp.com/add-vlc-command-prompt-windows/) is a step-by-step guide.
+You’ll need the VLC media player installed. And it has to be in it's default directory(Program Files/VideoLAN/VLC/). (for now)
 
 *I’m not using the VLC library because I find this more simple.*
 
