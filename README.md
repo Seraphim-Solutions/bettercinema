@@ -6,6 +6,8 @@
 
 With this tool, you can easily search the contents of webshare and open them in VLC (again video related).
 
+![better-cinema](https://user-images.githubusercontent.com/34968650/185767066-e4d6ed7f-7795-4492-b643-62ae47e861ad.gif)
+
 ### Why use this and not stream cinema? 
 
 Well, stream cinema has a manual database with movies, so some things aren’t there immediately, but they can be on webshare.
