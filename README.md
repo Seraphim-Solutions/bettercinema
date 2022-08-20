@@ -104,4 +104,4 @@ If can’t find what you have been looking for, you can try command `more` for m
 - [x] Fixed VLC not opening on windows
 
 
-## Have any suggestions? Open issue or contact me on Discord Danni#1965
+## Have any suggestions? Use [Discussion](https://github.com/Seraphim-Solutions/bettercinema/discussions/categories/ideas) or contact me on Discord Danni#1965
