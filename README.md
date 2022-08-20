@@ -2,7 +2,7 @@
 
 ## What is this?
 
-‘Webshare Terminal’ is a CLI tool for searching webshare.cz focused mainly on videos. Inspired by streamcinema.
+‘BetterCinema’ is a CLI tool for searching webshare.cz focused mainly on videos. Inspired by streamcinema.
 
 With this tool, you can easily search the contents of webshare and open them in VLC (again video related).
 
