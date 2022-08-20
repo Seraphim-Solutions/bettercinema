@@ -1,6 +1,4 @@
-# Webshare Terminal (WIP)
-
-for now, just a placeholder name
+# Bettercinema
 
 ## What is this?
 
