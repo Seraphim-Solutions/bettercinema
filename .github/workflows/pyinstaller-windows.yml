@@ -1,0 +1,24 @@
+name: Package Application with Pyinstaller (Windows)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Package Application
+      uses: JackMcKew/pyinstaller-action-windows@main
+      with:
+        path: builds/windows
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: BetterCinema-Windows
+        path: builds/windows/dist/windows # or path/to/artifact

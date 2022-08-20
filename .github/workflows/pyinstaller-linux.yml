@@ -1,0 +1,24 @@
+name: Package Application with Pyinstaller (Linux)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Package Application
+      uses: JackMcKew/pyinstaller-action-linux@main
+      with:
+        path: builds/linux
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: BetterCinema-Linux
+        path: builds/linux/dist/linux # or path/to/artifact
