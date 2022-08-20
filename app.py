@@ -25,7 +25,7 @@ class Cli():
         self.bc = BetterCinemaAPI()
         self.rp = Handler()
         self.player = Player()
-        self.player = Player_Infuse()
+        self.player_infuse = Player_Infuse()
         self.db = db()
         self.movie_names = []
         self.movie_idents = []
