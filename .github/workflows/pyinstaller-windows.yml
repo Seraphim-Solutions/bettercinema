@@ -9,6 +9,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Copy build files
+      run: rsync -av --exclude='builds' * builds/windows
+
     - name: Package Application
       uses: JackMcKew/pyinstaller-action-windows@main
       with:
@@ -18,3 +21,12 @@ jobs:
       with:
         name: BetterCinema-Windows
         path: builds/windows/dist/windows # or path/to/artifact
+
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: builds/windows/dist/windows
+        asset_name: app.exe
+        tag: ${{ github.ref }}
+        overwrite: true
