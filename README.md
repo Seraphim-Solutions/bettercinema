@@ -103,3 +103,10 @@ If can’t find what you have been looking for, you can try command `more` for m
 ## In progress
 
 - [ ] Improve interface (long term goal)
+
+
+# Bug Fixes
+
+- [x] Fixed crashing when a file was private / password protected
+
+- [x] Fixed VLC not opening on windows
