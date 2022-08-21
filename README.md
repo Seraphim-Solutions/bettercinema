@@ -1,10 +1,12 @@
 # Bettercinema
-
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Seraphim-Solutions/bettercinema?style=for-the-badge) ![GitHub repo file count](https://img.shields.io/github/directory-file-count/Seraphim-Solutions/bettercinema?style=for-the-badge)
 ## What is this?
 
 ‘BetterCinema’ is a CLI tool for searching webshare.cz focused mainly on videos. Inspired by [Stream Cinema Community](https://gitlab.com/stream-cinema-community).
 
 With this tool, you can easily search the contents of webshare and open them in VLC (again video related).
+
+![better-cinema](https://user-images.githubusercontent.com/34968650/185767066-e4d6ed7f-7795-4492-b643-62ae47e861ad.gif)
 
 ### Why use this and not stream cinema? 
 
@@ -102,4 +104,4 @@ If can’t find what you have been looking for, you can try command `more` for m
 - [x] Fixed VLC not opening on windows
 
 
-## Have any suggestions? Open issue or contact me on Discord Danni#1965
+## Have any suggestions? Use [Discussion](https://github.com/Seraphim-Solutions/bettercinema/discussions/categories/ideas) or contact me on Discord Danni#1965
