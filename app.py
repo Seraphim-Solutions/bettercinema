@@ -107,18 +107,23 @@ class Cli():
         
 
     def search(self):
-            search_type = inquirer.select(message="Search options: ", choices=[
+            search_type = inquirer.select(message="Options: ", choices=[
                 "Default Search",
-                "Advanced Search"],
+                "Advanced Search",
+                "Open Link"],
                 default="Default Search").execute()
             if search_type == "Default Search":
             # seach for movies with self.bc and print movies
                 query = inquirer.text(message="Search for movie: ").execute()
                 self.search_query(query)
                 self.list_movies()
-            else:
+            if search_type == "Advanced Search":
                 self.advanced_search()
-    
+
+            if search_type == "Open Link":
+                link = inquirer.text(message="Link: ").execute()
+                self.player.play(link)
+
     def advanced_search(self):
         query = inquirer.text(message="Name: ").execute()
         limit = inquirer.text(message="Limit [defaul is 25]: ").execute()
