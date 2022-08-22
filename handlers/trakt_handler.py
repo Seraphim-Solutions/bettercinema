@@ -29,5 +29,5 @@ class Handler:
         Movie(movie).mark_as_seen()
 
 
-# debug
+# Debug
 handler = Handler()
