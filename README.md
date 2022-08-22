@@ -92,10 +92,15 @@ If can’t find what you have been looking for, you can try command `more` for m
 
 - [x] Add multi-account support
 
+- [x] Play direct link option  
+
 ## In progress
 
 - [ ] Improve interface (long term goal)
 
+- [ ] Implement Trakt.tv for serial indexing
+
+- [ ] Option to download subtitles
 
 # Bug Fixes
 
