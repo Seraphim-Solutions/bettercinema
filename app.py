@@ -22,6 +22,7 @@ from handlers.config_handler import ConfigHandler
 
 class Cli():
     def __init__(self):
+        os.system("title BetterCinema")
         ConfigHandler()
         self.bc = BetterCinemaAPI()
         self.rp = Handler()
