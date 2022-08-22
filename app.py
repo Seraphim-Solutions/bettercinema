@@ -38,7 +38,7 @@ class Cli():
         self.page = 0
         self.user_dict = {}
         users = self.db.read_creds()
-
+        
         if users != []:
             for username, hash in users:
                 self.user_dict.update({username: hash})
@@ -70,7 +70,6 @@ class Cli():
             password = inquirer.secret(message="Password: ").execute()
             salt = self.get_salt(username)
             password = hashlib.sha1(md5Crypt(pw=password, salt=salt).return_passwd().encode('utf-8')).hexdigest()
-            print(password)
 
         else:
             use_sotred_account = inquirer.confirm(message="Use stored account?: ").execute()
@@ -103,9 +102,8 @@ class Cli():
         os.system('cls' if os.name == 'nt' else 'clear')
         self.search()
 
-    def search_query(self, query, limit=25, category="video", sort="largest", offset=0):
-        self.query = query
-        self.resutl_list = self.bc.search(self.query, limit=limit, category=category, offset=offset, sort=sort)
+    def search_query(self, query: dict):
+        self.resutl_list = self.bc.search(query)
         
 
     def search(self):
@@ -117,7 +115,9 @@ class Cli():
             if search_type == "Default Search":
             # seach for movies with self.bc and print movies
                 query = inquirer.text(message="Search for movie: ").execute()
-                self.search_query(query)
+                
+                self.query_dict = {"what": query, "offset": 0, "limit": 25, "category": "video", "sort": "largest"}
+                self.search_query(self.query_dict)
                 self.list_movies()
             if search_type == "Advanced Search":
                 self.advanced_search()
@@ -129,6 +129,7 @@ class Cli():
     def advanced_search(self):
         query = inquirer.text(message="Name: ").execute()
         limit = inquirer.text(message="Limit [defaul is 25]: ").execute()
+        offset = 0
         category = inquirer.fuzzy(message="Category [default is video]: ", choices=[
             "video",
             "audio",
@@ -145,17 +146,22 @@ class Cli():
             "rating"
             ]).execute()
 
-        self.search_query(query, int(limit), category, sort)
+        self.query_dict = {"what": query, "offset": offset, "limit": int(limit), "category": category, "sort": sort}
+
+        self.search_query(self.query_dict)
         self.list_movies()
 
-    def list_movies(self):
+    def get_result_data(self):
         for movie in self.resutl_list:
             self.movie_idents.append(movie[0])
             self.movie_names.append(movie[1])
             self.movie_sizes.append(movie[2])
             self.movie_postive_votes.append(movie[3])
             self.movie_negative_votes.append(movie[4])
-        
+        return
+
+    def list_movies(self):
+        self.get_result_data()
         self.movie_table = Table(show_header=True, header_style=self.color_neutral, title="Search Results", title_justify="centre")
         self.movie_table.add_column("#", style=self.color_primary, justify="middle")
         self.movie_table.add_column("Name", style=self.color_good, justify="middle")
@@ -208,7 +214,8 @@ class Cli():
 
     def more_results(self):
         self.page += 25
-        self.resutl_list = self.bc.search(self.query, category="video", limit=25, offset=self.page)
+        self.query_dict['offset'] = self.page
+        self.resutl_list = self.bc.search(self.query_dict)
         self.list_movies()
 
     def help(self):

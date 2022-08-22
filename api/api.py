@@ -16,15 +16,15 @@ def convert_size(size_bytes):
 
 
 class BetterCinemaAPI():
-    def search(self, query, limit=25, category="", offset=0, sort="largest"):
+    def search(self, query: dict):
         url = "https://webshare.cz/api/search/"
 
         payload={
-        'what': query,
-        'offset': offset,
-        'limit': limit,
-        'category': category,
-        'sort': sort
+        'what': query['what'],
+        'offset': query['offset'],
+        'limit': query['limit'],
+        'category': query['category'],
+        'sort': query['sort']
         }
 
         response = requests.request("POST", url, data=payload)
