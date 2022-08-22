@@ -1,6 +1,6 @@
 from hashlib import md5
 
-def unix_md5_crypt_kodi19(pw, salt, magic=None):
+def unix_md5_crypt(pw, salt, magic=None):
     from vendor.md5crypt import MAGIC
     from vendor.md5crypt import to64
     if magic is None:
@@ -65,35 +65,35 @@ def unix_md5_crypt_kodi19(pw, salt, magic=None):
         final = md5(ctx1).digest()
 
     # Final xform
+    passwd1 = ''
 
-    passwd = ''
-
-    passwd = passwd + to64((int(final[0]) << 16)
+    passwd2 = passwd1 + to64((int(final[0]) << 16)
                            | (int(final[6]) << 8)
                            | (int(final[12])), 4)
 
-    passwd = passwd + to64((int(final[1]) << 16)
+    passwd3 = passwd2 + to64((int(final[1]) << 16)
                            | (int(final[7]) << 8)
                            | (int(final[13])), 4)
 
-    passwd = passwd + to64((int(final[2]) << 16)
+    passwd4 = passwd3 + to64((int(final[2]) << 16)
                            | (int(final[8]) << 8)
                            | (int(final[14])), 4)
 
-    passwd = passwd + to64((int(final[3]) << 16)
+    passwd5 = passwd4 + to64((int(final[3]) << 16)
                            | (int(final[9]) << 8)
                            | (int(final[15])), 4)
 
-    passwd = passwd + to64((int(final[4]) << 16)
+    passwd6 = passwd5 + to64((int(final[4]) << 16)
                            | (int(final[10]) << 8)
                            | (int(final[5])), 4)
 
-    passwd = passwd + to64((int(final[11])), 2)
+    final_passwd = passwd6 + to64((int(final[11])), 2)
+    
 
-    return magic.decode() + salt.decode() + '$' + passwd
+    return magic.decode() + salt.decode() + '$' + final_passwd
 
 
-unix_md5_crypt = unix_md5_crypt_kodi19
+unix_md5_crypt = unix_md5_crypt
 
 # assign a wrapper function:
 md5crypt = unix_md5_crypt
