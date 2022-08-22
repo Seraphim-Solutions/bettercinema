@@ -15,7 +15,7 @@ from api.api import BetterCinemaAPI
 from handlers.request_parser import Handler
 from handlers.vlc_handler import Player
 from handlers.infuse_handler import Player_Infuse
-from misc.md5Crypt import md5crypt
+from misc.md5Crypt import md5Crypt
 from handlers.db_handler import db
 from handlers.config_handler import ConfigHandler
 
@@ -68,7 +68,8 @@ class Cli():
             username = inquirer.text(message="Username: ").execute()
             password = inquirer.secret(message="Password: ").execute()
             salt = self.get_salt(username)
-            password = hashlib.sha1(md5crypt(password, salt=salt).encode('utf-8')).hexdigest()
+            password = hashlib.sha1(md5Crypt(pw=password, salt=salt).return_passwd().encode('utf-8')).hexdigest()
+            print(password)
 
         else:
             use_sotred_account = inquirer.confirm(message="Use stored account?: ").execute()
@@ -85,7 +86,7 @@ class Cli():
                 username = inquirer.text(message="Username: ").execute()
                 salt = self.get_salt(username)
                 password = inquirer.secret(message="Password: ").execute()
-                password = hashlib.sha1(md5crypt(password, salt=salt).encode('utf-8')).hexdigest()
+                password = hashlib.sha1(md5Crypt(pw=password, salt=salt).return_passwd().encode('utf-8')).hexdigest()
 
         wst_xml = self.rp.login(username, password)
         xml = ET.fromstring(wst_xml)
