@@ -38,7 +38,7 @@ class Cli():
         self.page = 0
         self.user_dict = {}
         users = self.db.read_creds()
-        
+        self.clear = os.system('cls' if os.name == 'nt' else 'clear')
         if users != []:
             for username, hash in users:
                 self.user_dict.update({username: hash})
@@ -64,30 +64,7 @@ class Cli():
         salt = xml.find('salt').text
         return salt
 
-    def login(self):
-        if self.db.read_creds() == []:
-            username = inquirer.text(message="Username: ").execute()
-            password = inquirer.secret(message="Password: ").execute()
-            salt = self.get_salt(username)
-            password = hashlib.sha1(md5Crypt(pw=password, salt=salt).return_passwd().encode('utf-8')).hexdigest()
-
-        else:
-            use_sotred_account = inquirer.confirm(message="Use stored account?: ").execute()
-            if use_sotred_account:
-                user_choice = inquirer.select(message="Choose account: ", choices=[
-                    *self.user_dict
-                ]).execute()
-
-                username = user_choice
-                password = self.user_dict[username]
-
-
-            if use_sotred_account == False:
-                username = inquirer.text(message="Username: ").execute()
-                salt = self.get_salt(username)
-                password = inquirer.secret(message="Password: ").execute()
-                password = hashlib.sha1(md5Crypt(pw=password, salt=salt).return_passwd().encode('utf-8')).hexdigest()
-
+    def get_wst(self, username, password):
         wst_xml = self.rp.login(username, password)
         xml = ET.fromstring(wst_xml)
         
@@ -96,10 +73,42 @@ class Cli():
             self.login()
             
         self.wst = xml.find('token').text
+
+    def get_password_hash(self, password, salt):
+        return hashlib.sha1(md5Crypt(pw=password, salt=salt).return_passwd().encode('utf-8')).hexdigest()
+    
+    def stored_account(self):
+        use_sotred_account = inquirer.confirm(message="Use stored account?: ").execute()
+        if use_sotred_account:
+            user_choice = inquirer.select(message="Choose account: ", choices=[
+                *self.user_dict
+            ]).execute()
+
+            username = user_choice
+            password = self.user_dict[username]
+            
+            return username, password
+
+        if use_sotred_account == False:
+            username = inquirer.text(message="Username: ").execute()
+            salt = self.get_salt(username)
+            password = inquirer.secret(message="Password: ").execute()
+            return username, password
+            self.get_wst(username, self.get_password_hash(password, salt))
+
+    def login(self):
+        if self.db.read_creds() == []:
+            username = inquirer.text(message="Username: ").execute()
+            password = inquirer.secret(message="Password: ").execute()
+            salt = self.get_salt(username)
+            self.get_wst(username, self.get_password_hash(password, salt))
+
+        else:
+            username, password = self.stored_account()
         
         if username not in self.user_dict.keys():
             self.db.add_creds(username, password)
-        os.system('cls' if os.name == 'nt' else 'clear')
+        self.clear
         self.search()
 
     def search_query(self, query: dict):
