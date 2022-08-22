@@ -98,7 +98,11 @@ If can’t find what you have been looking for, you can try command `more` for m
 
 - [ ] Improve interface (long term goal)
 
-- [ ] Implement Trakt.tv for serial indexing
+- [ ] Implement Trakt.tv
+  - [ ] Trendings
+  - [ ] Serials (Series / Episodes)
+  - [ ] Watchlist
+  - [ ] Watched and Watching tracking
 
 - [ ] Option to download subtitles
 
