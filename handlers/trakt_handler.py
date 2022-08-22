@@ -14,7 +14,7 @@ class Handler:
         self.my_client_secret = '5b90899d0e7f3b71d98b7c2579b841d99843d1f102b62ae709ddbf4972c84b4f'
         trakt.core.AUTH_METHOD = trakt.core.OAUTH_AUTH
 
-    def login(self, username='SkyCityCZ'):
+    def login(self, username):
         init(username, client_id=self.my_client_id, client_secret=self.my_client_secret, store=True)
         print("Login done")
         
@@ -27,5 +27,3 @@ class Handler:
 
     def markMovieAsSeen(movie):
         Movie(movie).mark_as_seen()
-
-Handler().getPopularMovies()
