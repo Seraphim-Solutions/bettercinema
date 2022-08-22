@@ -94,6 +94,8 @@ If can’t find what you have been looking for, you can try command `more` for m
 
 - [x] Play direct link option  
 
+- [x] Recoded md5crypt
+
 ## In progress
 
 - [ ] Improve interface (long term goal)
