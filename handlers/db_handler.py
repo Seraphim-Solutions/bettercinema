@@ -2,7 +2,7 @@ import sqlite3
 
 class db():
     def __init__(self):
-        self.con = sqlite3.connect('data.db')
+        self.con = sqlite3.connect('config/data.db')
         self.cur = self.con.cursor()
         sql_create_projects_table = """CREATE TABLE IF NOT EXISTS creds (
                                         username text NOT NULL,
