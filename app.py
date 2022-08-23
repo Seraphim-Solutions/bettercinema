@@ -22,7 +22,6 @@ from handlers.config_handler import ConfigHandler
 
 class Cli():
     def __init__(self):
-        os.system("title BetterCinema")
         ConfigHandler()
         self.bc = BetterCinemaAPI()
         self.rp = Handler()
@@ -233,6 +232,7 @@ class Cli():
         self.select_item_from_results()
 
 if __name__ == '__main__':
+    os.system("title BetterCinema")
     pretty.install()
     install()
     console = Console()
