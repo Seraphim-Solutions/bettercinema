@@ -93,8 +93,8 @@ class Cli():
             username = inquirer.text(message="Username: ").execute()
             salt = self.get_salt(username)
             password = inquirer.secret(message="Password: ").execute()
-            return username, password
             self.get_wst(username, self.get_password_hash(password, salt))
+            return username, password
 
     def login(self):
         if self.db.read_creds() == []:
@@ -119,7 +119,8 @@ class Cli():
             search_type = inquirer.select(message="Options: ", choices=[
                 "Default Search",
                 "Advanced Search",
-                "Open Link"],
+                "Open Link",
+                Choice("Trakt.tv", "Trakt.tv [Beta]")],
                 default="Default Search").execute()
             if search_type == "Default Search":
             # seach for movies with self.bc and print movies
@@ -134,6 +135,11 @@ class Cli():
             if search_type == "Open Link":
                 link = inquirer.text(message="Link: ").execute()
                 self.player.play(link)
+
+            if search_type == "Trakt.tv":
+                print("This functionality is not yet implemented.")
+                self.search()
+                #self.trakt_tv()
 
     def advanced_search(self):
         query = inquirer.text(message="Name: ").execute()
@@ -206,6 +212,7 @@ class Cli():
     def selected_item_options(self, movie_link):
         item_options = inquirer.select(message="Select item options: ", choices=[
             "Download",
+            "Get Link",
             "Play in VLC [Network Stream]",
             "Play in Infuse [Apple only]"]).execute()
         
@@ -220,6 +227,39 @@ class Cli():
         if item_options == "Play in Infuse [Apple only]":
             self.player_infuse.play(movie_link)
 
+        if item_options == "Get Link":
+            print(movie_link)
+            self.search()
+
+    def trakt_tv_movies(self):
+        movies_options = inquirer.fuzzy(message="Options: ", choices=[
+            "Trending",
+            "Popular",
+            "Recommended",
+            "Watched",
+            "Collected",
+            "Anticipated",
+            "Box Office"]).execute()
+
+    def trakt_tv_shows(self):
+        shows_options = inquirer.fuzzy(message="Options: ", choices=[
+            "Trending",
+            "Popular",
+            "Recommended",
+            "Watched",
+            "Collected",
+            "Anticipated"]).execute()
+
+    def trakt_tv(self):
+        video_type = inquirer.select(message="Options: ", choices=[
+            "Movies",
+            "TV Shows",],
+            default="Movies").execute()
+
+        if video_type == "Movies":
+            self.trakt_tv_movies()
+        if video_type == "TV Shows":
+            self.trakt_tv_shows()
 
     def more_results(self):
         self.page += 25
