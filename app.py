@@ -29,6 +29,7 @@ class Cli():
         self.player = Player()
         self.player_infuse = Player_Infuse()
         self.db = db()
+        self.md5crypt = md5Crypt()
         self.movie_names = []
         self.movie_idents = []
         self.movie_sizes = []
@@ -75,7 +76,7 @@ class Cli():
         self.wst = xml.find('token').text
 
     def get_password_hash(self, password, salt):
-        return hashlib.sha1(md5Crypt(pw=password, salt=salt).return_passwd().encode('utf-8')).hexdigest()
+        return hashlib.sha1(self.md5crypt.md5crypt(pw=password, salt=salt).encode('utf-8')).hexdigest()
     
     def stored_account(self):
         use_sotred_account = inquirer.confirm(message="Use stored account?: ").execute()

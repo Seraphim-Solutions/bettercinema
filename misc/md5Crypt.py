@@ -4,21 +4,25 @@ from vendor.md5crypt import to64
 
 
 class md5Crypt:
-    def __init__(self, pw=None, salt=None, magic=None):
-        if pw and salt != None:
-            if magic is None:
-                magic = MAGIC
+    def __init__(self):
+        pass
 
-            # Take care of the magic string if present
-            if salt[:len(magic)] == magic:
-                salt = salt[len(magic):]
 
-            # self.salt can have up to 8 characters:
-            salt = salt.split('$', 1)[0]
+    def parse_params(self, pw=None, salt=None, magic=None):
+        if magic is None:
+            magic = MAGIC
 
-            self.salt = salt[:8].encode('utf-8')
-            self.magic = magic.encode('utf-8')
-            self.pw = pw.encode('utf-8')
+        # Take care of the magic string if present
+        if salt[:len(magic)] == magic:
+            salt = salt[len(magic):]
+
+        # self.salt can have up to 8 characters:
+        salt = salt.split('$', 1)[0]
+
+        self.salt = salt[:8].encode('utf-8')
+        self.magic = magic.encode('utf-8')
+        self.pw = pw.encode('utf-8')
+
 
     def ctx(self):
         ctx = self.pw + self.magic + self.salt
@@ -31,6 +35,7 @@ class md5Crypt:
                 ctx = ctx + final[:pl]
         return ctx
 
+
     def get_final(self, ctx):
         i = len(self.pw)
         while i:
@@ -41,12 +46,8 @@ class md5Crypt:
             i = i >> 1
         return md5(ctx).digest()
 
+
     def get_ctx1(self):
-        ctx = self.ctx()
-        self.final = self.get_final(ctx)
-        # The following is supposed to make
-        # things run slower.
-        # my question: WTF???
         for i in range(1000):
             ctx1 = ''.encode('utf-8')
             if i & 1:
@@ -68,8 +69,16 @@ class md5Crypt:
             self.final = md5(ctx1).digest()
 
 
-    def return_passwd(self):
+    def md5crypt(self, pw=None, salt=None, magic=None):
+        if pw and salt != None:
+            self.parse_params(pw=pw, salt=salt, magic=magic)
+        else:
+            return
+        
+        ctx = self.ctx()
+        self.final = self.get_final(ctx)
         self.get_ctx1()
+        
         # Final xform
         passwd = ''
 
