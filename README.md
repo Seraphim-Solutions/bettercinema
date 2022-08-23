@@ -4,7 +4,7 @@
 ![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/Seraphim-Solutions/bettercinema?style=for-the-badge) 
 ![Code Climate issues](https://img.shields.io/codeclimate/issues/Seraphim-Solutions/bettercinema?style=for-the-badge)
 
-https://codeclimate.com/github/Seraphim-Solutions/bettercinema/
+[CodeClimate Link](https://codeclimate.com/github/Seraphim-Solutions/bettercinema/)
 ## What is this?
 
 ‘BetterCinema’ is a CLI tool for searching webshare.cz focused mainly on videos. Inspired by [Stream Cinema Community](https://gitlab.com/stream-cinema-community).
@@ -18,6 +18,9 @@ With this tool, you can easily search the contents of webshare and open them in 
 Well, stream cinema has a manual database with movies, so some things aren’t there immediately, but they can be on webshare.
 
 Also, it feels quicker.
+
+### Instalation
+Download release for your operation system of choice [here](https://github.com/Seraphim-Solutions/bettercinema/releases)
 
 # Requirements
 
