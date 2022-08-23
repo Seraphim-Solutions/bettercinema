@@ -19,7 +19,7 @@ Well, stream cinema has a manual database with movies, so some things aren’t t
 
 Also, it feels quicker.
 
-### Instalation
+## Instalation
 Download release for your operation system of choice [here](https://github.com/Seraphim-Solutions/bettercinema/releases)
 
 # Requirements
