@@ -29,7 +29,9 @@ class md5Crypt:
                 ctx = ctx + final[:16]
             else:
                 ctx = ctx + final[:pl]
+        return ctx
 
+    def get_final(self, ctx):
         i = len(self.pw)
         while i:
             if i & 1:
@@ -37,12 +39,13 @@ class md5Crypt:
             else:
                 ctx = ctx + chr(self.pw[0]).encode('utf-8')
             i = i >> 1
+        return md5(ctx).digest()
 
-        self.final = md5(ctx).digest()
-
+    def get_ctx1(self):
+        ctx = self.ctx()
+        self.final = self.get_final(ctx)
         # The following is supposed to make
         # things run slower.
-
         # my question: WTF???
         for i in range(1000):
             ctx1 = ''.encode('utf-8')
@@ -66,7 +69,7 @@ class md5Crypt:
 
 
     def return_passwd(self):
-        self.ctx()
+        self.get_ctx1()
         # Final xform
         passwd = ''
 
