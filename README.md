@@ -86,6 +86,7 @@ If can’t find what you have been looking for, you can try command `more` for m
 # Build instructions
 ```BASH
 git clone https://github.com/Seraphim-Solutions/bettercinema.git
+cd bettercinema
 python3 -m pip install -r requirements.txt
 python3 app.py
 ```
