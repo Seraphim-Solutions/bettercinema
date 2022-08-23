@@ -84,6 +84,10 @@ This part is quite self-explanatory, to select a specific movie just type the in
 If can’t find what you have been looking for, you can try command `more` for more results, or just try other filters in Advanced Search.
 
 # Build instructions
-TODO
+```BASH
+git clone https://github.com/Seraphim-Solutions/bettercinema.git
+python3 -m pip install -r requirements.txt
+python3 app.py
+```
 
 ## Have any suggestions? Use [Discussion](https://github.com/Seraphim-Solutions/bettercinema/discussions/categories/ideas) or contact me on Discord Danni#1965
