@@ -83,43 +83,7 @@ This part is quite self-explanatory, to select a specific movie just type the in
 
 If can’t find what you have been looking for, you can try command `more` for more results, or just try other filters in Advanced Search.
 
-# TODO
-
-## Finished
-
-- [x] Fix ‘more’ command (implementing offset)
-
-- [x] Add more data to the table (rating, etc.)
-
-- [x] Add download option
-
-- [x] Error handling
-
-- [x] Add option for user to customize colors
-
-- [x] Add multi-account support
-
-- [x] Play direct link option  
-
-- [x] Recoded md5crypt
-
-## In progress
-
-- [ ] Improve interface (long term goal)
-
-- [ ] Implement Trakt.tv
-  - [ ] Trendings
-  - [ ] Serials (Series / Episodes)
-  - [ ] Watchlist
-  - [ ] Watched and Watching tracking
-
-- [ ] Option to download subtitles
-
-# Bug Fixes
-
-- [x] Fixed crashing when a file was private / password protected
-
-- [x] Fixed VLC not opening on windows
-
+# Build instructions
+TODO
 
 ## Have any suggestions? Use [Discussion](https://github.com/Seraphim-Solutions/bettercinema/discussions/categories/ideas) or contact me on Discord Danni#1965
