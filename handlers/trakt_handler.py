@@ -1,10 +1,11 @@
 import requests
 import urllib
-import os 
+import os
 import trakt.core
 
 from trakt import init
 from trakt import movies
+from trakt import tv
 from trakt.movies import Movie
 from trakt.movies import get_recommended_movies
 
@@ -19,11 +20,17 @@ class Handler:
         init(username, client_id=self.my_client_id, client_secret=self.my_client_secret, store=True)
         
 
+    def getTrendingMovies(self):
+        return movies.trending_movies    
+
+
+    def getPopularMovies(self):
+        return movies.
+
+
     def getRecommendedMovies(self):
         return get_recommended_movies()
 
-    def getPopularMovies(self):
-        return movies.trending_movies
 
     def markMovieAsSeen(self, movie):
         Movie(movie).mark_as_seen()
