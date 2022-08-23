@@ -1,10 +1,8 @@
 # Bettercinema
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Seraphim-Solutions/bettercinema?style=for-the-badge) 
-![GitHub repo file count](https://img.shields.io/github/directory-file-count/Seraphim-Solutions/bettercinema?style=for-the-badge) 
-![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/Seraphim-Solutions/bettercinema?style=for-the-badge) 
-![Code Climate issues](https://img.shields.io/codeclimate/issues/Seraphim-Solutions/bettercinema?style=for-the-badge)
-
-[CodeClimate Link](https://codeclimate.com/github/Seraphim-Solutions/bettercinema/)
+[![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Seraphim-Solutions/bettercinema?style=for-the-badge)](https://github.com/Seraphim-Solutions/bettercinema) 
+[![GitHub repo file count](https://img.shields.io/github/directory-file-count/Seraphim-Solutions/bettercinema?style=for-the-badge)](https://github.com/Seraphim-Solutions/bettercinema) 
+[![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/Seraphim-Solutions/bettercinema?style=for-the-badge)](https://codeclimate.com/github/Seraphim-Solutions/bettercinema/) 
+[![Code Climate issues](https://img.shields.io/codeclimate/issues/Seraphim-Solutions/bettercinema?style=for-the-badge)](https://codeclimate.com/github/Seraphim-Solutions/bettercinema/)
 ## What is this?
 
 ‘BetterCinema’ is a CLI tool for searching webshare.cz focused mainly on videos. Inspired by [Stream Cinema Community](https://gitlab.com/stream-cinema-community).
