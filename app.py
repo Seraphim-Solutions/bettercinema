@@ -18,7 +18,7 @@ from handlers.infuse_handler import Player_Infuse
 from misc.md5Crypt import md5Crypt
 from handlers.db_handler import db
 from handlers.config_handler import ConfigHandler
-
+from handlers.trakt.oauth import oauth
 
 class Cli():
     def __init__(self):
@@ -29,11 +29,8 @@ class Cli():
         self.player_infuse = Player_Infuse()
         self.db = db()
         self.md5crypt = md5Crypt()
-        self.movie_names = []
-        self.movie_idents = []
-        self.movie_sizes = []
-        self.movie_postive_votes = []
-        self.movie_negative_votes = []
+        self.trakt = oauth()
+        self.movie_names, self.movie_idents, self.movie_sizes, self.movie_postive_votes, self.movie_negative_votes = [], [], [], [], []
         self.movie_links = []
         self.page = 0
         self.user_dict = {}
@@ -140,8 +137,11 @@ class Cli():
 
             if search_type == "Trakt.tv":
                 print("This functionality is not yet implemented.")
-                self.search()
-                #self.trakt_tv()
+                if self.has_trakt_auth == None:
+                    self.trakt_auth()
+                else:
+                    self.search() # temp until trakt handler is implemented
+                    #self.trakt_tv()
 
     def advanced_search(self):
         query = inquirer.text(message="Name: ").execute()
@@ -262,6 +262,18 @@ class Cli():
             self.trakt_tv_movies()
         if video_type == "TV Shows":
             self.trakt_tv_shows()
+
+
+    def trakt_auth(self):
+        # TODO
+        self.has_trakt_auth = self.trakt.auth()
+        if self.has_trakt_auth == True:
+            print("Authenticated.")
+            self.search()
+        else:
+            print("Authentication failed.")
+            self.search()
+
 
     def more_results(self):
         self.page += 25
