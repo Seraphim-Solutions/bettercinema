@@ -33,7 +33,11 @@ class BetterCinemaAPI():
 
         data = []
         data_dict = xmltodict.parse(xml)
-        temp_dict = data_dict['response']['file']
+        try:
+            temp_dict = data_dict['response']['file']
+        except Exception:
+            return None
+    
         data.extend(temp_dict)
         list = []
         for x in range(len(data)):

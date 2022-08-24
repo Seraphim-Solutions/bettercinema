@@ -113,7 +113,9 @@ class Cli():
 
     def search_query(self, query: dict):
         self.resutl_list = self.bc.search(query)
-        
+        if self.resutl_list == None:
+            print(f"[{self.color_info}] > No results found[/]\n")
+            self.search()
 
     def search(self):
             search_type = inquirer.select(message="Options: ", choices=[
@@ -167,7 +169,7 @@ class Cli():
         self.list_movies()
 
     def get_result_data(self):
-        for movie in self.resutl_list:
+        for movie in self.resutl_list:  
             self.movie_idents.append(movie[0])
             self.movie_names.append(movie[1])
             self.movie_sizes.append(movie[2])
@@ -253,7 +255,7 @@ class Cli():
     def trakt_tv(self):
         video_type = inquirer.select(message="Options: ", choices=[
             "Movies",
-            "TV Shows",],
+            "TV Shows"],
             default="Movies").execute()
 
         if video_type == "Movies":
