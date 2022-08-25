@@ -2,4 +2,3 @@ InquirerPy
 requests
 rich
 xmltodict
-trakt
