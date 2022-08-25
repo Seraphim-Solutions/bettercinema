@@ -137,11 +137,8 @@ class Cli():
 
             if search_type == "Trakt.tv":
                 print("This functionality is not yet implemented.")
-                if self.has_trakt_auth == None:
-                    self.trakt_auth()
-                else:
-                    self.search() # temp until trakt handler is implemented
-                    #self.trakt_tv()
+                self.trakt_auth() if self.has_trakt_auth == None else self.search() # temp until trakt handler is implemented | move this to trakt_tv() after trakt handler is implemented
+                #self.trakt_tv()
 
     def advanced_search(self):
         query = inquirer.text(message="Name: ").execute()
