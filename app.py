@@ -20,6 +20,7 @@ from handlers.db_handler import db
 from handlers.config_handler import ConfigHandler
 from handlers.trakt.oauth import oauth
 
+
 class Cli():
     def __init__(self):
         ConfigHandler()
@@ -29,12 +30,13 @@ class Cli():
         self.player_infuse = Player_Infuse()
         self.db = db()
         self.md5crypt = md5Crypt()
-        self.trakt = oauth()
+        self.trakt_oauth = oauth()
         self.movie_names, self.movie_idents, self.movie_sizes, self.movie_postive_votes, self.movie_negative_votes = [], [], [], [], []
         self.movie_links = []
         self.page = 0
         self.user_dict = {}
         users = self.db.read_creds()
+        self.has_trakt_auth = None
         self.clear = os.system('cls' if os.name == 'nt' else 'clear')
         if users != []:
             for username, hash in users:
@@ -104,10 +106,11 @@ class Cli():
             username, password = self.stored_account()
         
         if username not in self.user_dict.keys():
-            self.db.add_creds(username, password)
+            self.db.add_creds(username, self.get_password_hash(password, salt))
         self.clear
         self.search()
 
+    
     def search_query(self, query: dict):
         self.resutl_list = self.bc.search(query)
         if self.resutl_list == None:
@@ -262,15 +265,14 @@ class Cli():
 
 
     def trakt_auth(self):
-        # TODO
-        self.has_trakt_auth = self.trakt.auth()
-        if self.has_trakt_auth == True:
-            print("Authenticated.")
-            self.search()
+        if self.db.read_device_auth() == []:
+            auth_code = self.trakt_oauth.authorize_device()
+            print(f"Please go to the following URL and enter the code: [bold]{auth_code[0]}[/]\n{auth_code[1]}")
+            input("Press enter to continue, after you athorize...")
+            self.trakt_oauth.get_device_token(auth_code[2])
+            self.trakt_oauth.get_settings()
         else:
-            print("Authentication failed.")
-            self.search()
-
+            print(f"Already authorized as {self.db.read_trakt_user_data()[0][0]}")
 
     def more_results(self):
         self.page += 25

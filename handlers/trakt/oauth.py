@@ -1,16 +1,19 @@
-from re import A
 import requests
 import json
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from db_handler import db
 
 
 class oauth:
     def __init__(self):
+        self.db = db()
         with open('./config/trakt_config.json') as f:
             self.trakt_config = json.load(f)
 
+
     def authorize_device(self):
         cliend_id = self.trakt_config['application_auth']['client_id']
-        client_secret = self.trakt_config['application_auth']['client_secret']
 
         url = 'https://api.trakt.tv/oauth/device/code'
 
@@ -20,22 +23,40 @@ class oauth:
 
         response = requests.post(url, data=payload)
         authorize_data = response.json()
-        self.device_code = authorize_data['device_code']
+        return [authorize_data['user_code'], authorize_data['verification_url'], authorize_data['device_code']]
 
-    def get_device_token(self):
+
+    def get_device_token(self, device_code):
+        self.username = self.db.read_creds()[0][0]
         url = 'https://api.trakt.tv/oauth/device/token'
 
-        payload = {
+        payload = json.dumps({
             'client_id': self.trakt_config['application_auth']['client_id'],
             'client_secret': self.trakt_config['application_auth']['client_secret'],
-            'code': self.device_code,
-        }
+            'code': device_code,
+        })
 
         headers = {
             'Content-Type': 'application/json',
         }
 
         response = requests.post(url, data=payload, headers=headers)
-        device_token = response.json()
-        self.device_token = device_token['access_token']
+        device_token_data = response.json()
+        
+        self.db.add_device_auth(device_token_data['access_token'], device_token_data['refresh_token'], device_token_data['expires_in'], device_token_data['created_at'], self.username)
+    
 
+    def get_settings(self):
+        headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f"Bearer {self.db.read_device_auth()[0][0]}",
+        'trakt-api-version': '2',
+        'trakt-api-key': self.trakt_config['application_auth']['client_id']
+        }
+
+
+        request = requests.get('https://api.trakt.tv/users/settings', headers=headers)
+
+        response_body = request.json()
+
+        self.db.add_trakt_user_data(response_body['user']['username'], response_body['user']['private'], response_body['user']['vip'], response_body['user']['vip_ep'], response_body['user']['ids']['slug'], self.username)
