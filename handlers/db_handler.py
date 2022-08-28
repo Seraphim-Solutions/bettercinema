@@ -55,12 +55,7 @@ CREATE TABLE IF NOT EXISTS `titulkycom` (
 
     
     def add_trakt_user_data(self, username, private, vip, vip_ep, slug, current_user):
-        # insert if not exists else update if id exists
-        self.cur.execute("SELECT id FROM trakt")
-        if self.cur.fetchone() is None or current_user not in self.cur.fetchall():
-            self.cur.execute("INSERT INTO trakt (trakt_username, private, vip, vip_ep, slug) VALUES (?, ?, ?, ?, ?)", (username, private, vip, vip_ep, slug))
-        else:
-            self.cur.execute("UPDATE trakt SET trakt_username = ?, private = ?, vip = ?, vip_ep= ?, slug = ? WHERE id = ?", (username, private, vip, vip_ep, slug, current_user))
+        self.cur.execute("UPDATE trakt SET trakt_username = ?, private = ?, vip = ?, vip_ep= ?, slug = ? WHERE id = ?", (username, private, vip, vip_ep, slug, current_user))
         self.con.commit()
 
     
