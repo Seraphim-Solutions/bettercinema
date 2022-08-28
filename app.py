@@ -19,6 +19,7 @@ from misc.md5Crypt import md5Crypt
 from handlers.db_handler import db
 from handlers.config_handler import ConfigHandler
 from handlers.trakt.oauth import oauth
+from handlers.version_handler import version_handler
 
 
 class Cli():
@@ -288,7 +289,7 @@ class Cli():
         self.select_item_from_results()
 
 if __name__ == '__main__':
-    os.system("title BetterCinema")
+    os.system(f"title BetterCinema {version_handler.version}")
     pretty.install()
     install()
     console = Console()
