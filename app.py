@@ -106,6 +106,7 @@ class Cli():
             username, password = self.stored_account()
         
         if username not in self.user_dict.keys():
+            salt = self.get_salt(username)
             self.db.add_creds(username, self.get_password_hash(password, salt))
         self.clear
         self.search()
@@ -265,7 +266,8 @@ class Cli():
 
 
     def trakt_auth(self):
-        if self.db.read_device_auth() == []:
+        current_user = self.db.get_current_user()[0]
+        if current_user not in self.db.read_device_auth():
             auth_code = self.trakt_oauth.authorize_device()
             print(f"Please go to the following URL and enter the code: [bold]{auth_code[0]}[/]\n{auth_code[1]}")
             input("Press enter to continue, after you athorize...")

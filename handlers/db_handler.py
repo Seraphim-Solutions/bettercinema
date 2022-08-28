@@ -70,12 +70,12 @@ CREATE TABLE IF NOT EXISTS `titulkycom` (
 
     
     def read_device_auth(self):
-        self.cur.execute("SELECT access_token, refresh_token, expires_in, created_at FROM trakt")
+        self.cur.execute("SELECT id, access_token, refresh_token, expires_in, created_at FROM trakt WHERE id = ?", (self.get_current_user()))
         return self.cur.fetchall()
     
 
     def read_trakt_user_data(self):
-        self.cur.execute("SELECT trakt_username, private, vip, vip_ep, slug FROM trakt")
+        self.cur.execute("SELECT trakt_username, private, vip, vip_ep, slug FROM trakt WHERE id = ?", (self.get_current_user())")
         return self.cur.fetchall()
 
     
