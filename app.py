@@ -274,6 +274,7 @@ class Cli():
         else:
             print(f"Already authorized as {self.db.read_trakt_user_data()[0][0]}")
 
+
     def more_results(self):
         self.page += 25
         self.query_dict['offset'] = self.page
