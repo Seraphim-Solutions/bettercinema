@@ -49,7 +49,7 @@ class oauth:
     def get_settings(self):
         headers = {
         'Content-Type': 'application/json',
-        'Authorization': f"Bearer {self.db.read_device_auth()[0][0]}",
+        'Authorization': f"Bearer {self.db.read_device_auth()[0][1]}",
         'trakt-api-version': '2',
         'trakt-api-key': self.trakt_config['application_auth']['client_id']
         }
