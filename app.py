@@ -18,8 +18,7 @@ from handlers.infuse_handler import Player_Infuse
 from misc.md5Crypt import md5Crypt
 from handlers.db_handler import db
 from handlers.config_handler import ConfigHandler
-from handlers.trakt.oauth import oauth
-
+from handlers.trakt_handler import Trakt 
 
 class Cli():
     def __init__(self):
@@ -30,7 +29,7 @@ class Cli():
         self.player_infuse = Player_Infuse()
         self.db = db()
         self.md5crypt = md5Crypt()
-        self.trakt_oauth = oauth()
+        self.Trakt = Trakt()
         self.movie_names, self.movie_idents, self.movie_sizes, self.movie_postive_votes, self.movie_negative_votes = [], [], [], [], []
         self.movie_links = []
         self.page = 0
@@ -238,43 +237,61 @@ class Cli():
 
     def trakt_tv_movies(self):
         movies_options = inquirer.fuzzy(message="Options: ", choices=[
-            "Trending",
-            "Popular",
-            "Recommended",
-            "Watched",
-            "Collected",
-            "Anticipated",
-            "Box Office"]).execute()
+            Choice("trending", "Trending"),
+            Choice("popular", "Popular"),
+            Choice("recommended", "Recommended"),
+            Choice("watched", "Watched"),
+            Choice("collected", "Collected"),
+            Choice("anticipated", "Anticipated"),
+            Choice("box_office", "Box Office")]).execute()
+        
+        
+        if movies_options:
+            print(self.Trakt.movies(movies_options))
 
     def trakt_tv_shows(self):
         shows_options = inquirer.fuzzy(message="Options: ", choices=[
-            "Trending",
-            "Popular",
-            "Recommended",
-            "Watched",
-            "Collected",
-            "Anticipated"]).execute()
+            Choice("trending", "Trending"),
+            Choice("popular", "Popular"),
+            Choice("recommended", "Recommended"),
+            Choice("watched", "Watched"),
+            Choice("collected", "Collected"),
+            Choice("anticipated", "Anticipated")]).execute()
+
+        if shows_options:
+            print(self.Trakt.shows(shows_options))
 
     def trakt_tv(self):
-        video_type = inquirer.select(message="Options: ", choices=[
+        option = inquirer.select(message="Options: ", choices=[
             "Movies",
-            "TV Shows"],
+            "TV Shows",
+            "User"],
             default="Movies").execute()
 
-        if video_type == "Movies":
+        if option == "Movies":
             self.trakt_tv_movies()
-        if video_type == "TV Shows":
+        if option == "TV Shows":
             self.trakt_tv_shows()
+        if option == "User":
+            self.trakt_user()
+
+
+    def trakt_user(self):
+        user_options = inquirer.fuzzy(message="Options: ", choices=[
+            Choice("history", "History")]).execute()
+
+        if user_options:
+            print(self.Trakt.user(user_options, self.db.read_trakt_user_data()[0][4]))
 
 
     def trakt_auth(self):
         current_user = self.db.get_current_user()
         if str(current_user) not in str(self.db.read_device_auth()[0][0]):
-            auth_code = self.trakt_oauth.authorize_device()
+            auth_code = self.Trakt.authorize_device()
             print(f"Please go to the following URL and enter the code: [bold]{auth_code[0]}[/]\n{auth_code[1]}")
             input("Press enter to continue, after you authorize...")
-            self.trakt_oauth.get_device_token(auth_code[2])
-            self.trakt_oauth.get_settings()
+            self.Trakt.get_device_token(auth_code[2])
+            self.Trakt.get_settings()
         else:
             print(f"Already authorized as {self.db.read_trakt_user_data()[0][0]}")
             self.trakt_tv()
