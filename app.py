@@ -278,10 +278,16 @@ class Cli():
 
     def trakt_user(self):
         user_options = inquirer.fuzzy(message="Options: ", choices=[
-            Choice("history", "History")]).execute()
+            Choice("history", "History"),
+            Choice("watched", "Watched")]).execute()
 
         if user_options:
-            print(self.Trakt.user(user_options, self.db.read_trakt_user_data()[0][4]))
+            if user_options == "watched":
+                arg = inquirer.fuzzy(message="Type: ", choices=[
+                    "movies",
+                    "shows"]).execute()
+                print(self.Trakt.user(user_options, self.db.read_trakt_user_data()[0][4], arg))
+        print(self.Trakt.user(user_options, self.db.read_trakt_user_data()[0][4]))
 
 
     def trakt_auth(self):

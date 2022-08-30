@@ -34,5 +34,5 @@ class Trakt:
 
     # user
 
-    def user(self, type, slug):
-        return self.User.get(type, slug)
+    def user(self, type, slug, arg=None):
+        return self.User.get(type, slug, arg)
