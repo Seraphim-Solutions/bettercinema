@@ -269,7 +269,7 @@ class Cli():
 
     def trakt_auth(self):
         current_user = self.db.get_current_user()
-        if current_user not in self.db.read_device_auth():
+        if str(current_user) not in str(self.db.read_device_auth()[0][0]):
             auth_code = self.trakt_oauth.authorize_device()
             print(f"Please go to the following URL and enter the code: [bold]{auth_code[0]}[/]\n{auth_code[1]}")
             input("Press enter to continue, after you authorize...")
@@ -277,6 +277,8 @@ class Cli():
             self.trakt_oauth.get_settings()
         else:
             print(f"Already authorized as {self.db.read_trakt_user_data()[0][0]}")
+            self.trakt_tv()
+
 
 
     def more_results(self):
@@ -288,7 +290,7 @@ class Cli():
     def help(self):
         print("Select movie by typing the number of the movie or 'more' for more results")
         self.select_item_from_results()
-
+ 
 if __name__ == '__main__':
     os.system("title BetterCinema")
     pretty.install()
