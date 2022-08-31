@@ -263,10 +263,11 @@ class Cli():
 
     def trakt_tv(self):
         option = inquirer.select(message="Options: ", choices=[
+            "Search",
             "Movies",
             "TV Shows",
             "User"],
-            default="Movies").execute()
+            default="Search").execute()
 
         if option == "Movies":
             self.trakt_tv_movies()
@@ -274,6 +275,8 @@ class Cli():
             self.trakt_tv_shows()
         if option == "User":
             self.trakt_user()
+        if option == "Search":
+            self.trakt_search()
 
 
     def trakt_user(self):
@@ -302,6 +305,18 @@ class Cli():
             print(f"Already authorized as {self.db.read_trakt_user_data()[0][0]}")
             self.trakt_tv()
 
+
+    def trakt_search(self):
+        search = inquirer.text(message="Search: ").execute()
+        search_type = inquirer.fuzzy(message="Type: ", choices=[
+            Choice("", "none"),
+            "movie",
+            "show",
+            "episode",
+            "person",
+            "list"]).execute()
+
+        print(self.Trakt.search(search, search_type))
 
 
     def more_results(self):
