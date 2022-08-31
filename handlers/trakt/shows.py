@@ -1,6 +1,7 @@
 import requests
 import json
 
+
 class Shows:
     def __init__(self):
         with open('./config/trakt_config.json') as f:
