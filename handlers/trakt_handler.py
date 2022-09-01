@@ -29,9 +29,13 @@ class Trakt:
         return self.movies.get(arg)
 
     # shows
-    def shows(self, arg):
-        return self.Shows.get(arg)
+    def shows(self, arg, limit=""):
+        return self.Shows.get(arg, limit)
 
+    
+    def seasons(self, arg, season=""):
+        return self.Shows.seasons(arg, season)
+        
     # user
     def user(self, type, slug, arg=None):
         return self.User.get(type, slug, arg)
@@ -39,3 +43,5 @@ class Trakt:
     # search
     def search(self, query, type=""):
         return self.Search.get(query, type)
+
+    

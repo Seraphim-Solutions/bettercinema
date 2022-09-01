@@ -130,7 +130,7 @@ class Cli():
             # seach for movies with self.bc and print movies
                 query = inquirer.text(message="Search for movie: ").execute()
                 
-                self.query_dict = {"what": query, "offset": 0, "limit": 25, "category": "video", "sort": "largest"}
+                self.query_dict = {"what": query, "offset": 0, "limit": 25, "category": "video", "sort": ""}
                 self.search_query(self.query_dict)
                 self.list_movies()
             if search_type == "Advanced Search":
@@ -235,6 +235,7 @@ class Cli():
             print(movie_link)
             self.search()
 
+
     def trakt_tv_movies(self):
         movies_options = inquirer.fuzzy(message="Options: ", choices=[
             Choice("trending", "Trending"),
@@ -249,6 +250,39 @@ class Cli():
         if movies_options:
             print(self.Trakt.movies(movies_options))
 
+
+    def trakt_episodes(self, episodes):
+        episode_name = [episode['title'] for episode in episodes]
+        episode_number = [episode_count for episode_count in range(1, len(episode_name) + 1)]
+        choices = [Choice(str(episode_number[i]), f"E:{episode_number[i]} {episode_name[i]}") for i in range(len(episode_name))]
+
+        episode = inquirer.fuzzy(message="Select episode: ", choices=choices).execute()
+        name = self.selcted_slug.replace("-", ".")
+        query = f"{name}.S{int(self.season_selection):02d}E{int(episode):02d}"
+        self.query_dict = {"what": query, "offset": 0, "limit": 25, "category": "video", "sort": ""}
+        self.search_query(self.query_dict)
+        self.list_movies()
+
+    
+    def trakt_season_list(self, seasons, slug):
+        season_list = [Choice(season, f"Season {season}") for season in range(seasons)]
+        
+        self.season_selection = inquirer.fuzzy(message="Select season: ", choices=season_list).execute()
+        
+        episodes = self.Trakt.seasons(slug, self.season_selection)
+        self.trakt_episodes(episodes)
+
+    
+    def search_trakt_seasons(self, query_list):
+        choices = [Choice(self.slug[x], query_list[x]) for x in range(len(self.slug))]
+        selection = inquirer.fuzzy(message="Select show: ", choices=[
+                *choices
+                ]).execute()
+        seasons = self.Trakt.seasons(selection)
+        self.selcted_slug = selection
+        self.trakt_season_list(len(seasons), selection)
+
+
     def trakt_tv_shows(self):
         shows_options = inquirer.fuzzy(message="Options: ", choices=[
             Choice("trending", "Trending"),
@@ -258,8 +292,21 @@ class Cli():
             Choice("collected", "Collected"),
             Choice("anticipated", "Anticipated")]).execute()
 
-        if shows_options:
-            print(self.Trakt.shows(shows_options))
+
+        if "popular" == shows_options:
+            query_list = []
+            show_list = ([[title['title'], title['ids']['slug'], title['year']] for title in self.Trakt.shows(shows_options, "90000")])
+            [query_list.append(show[0]) for show in show_list]
+            self.slug = [show[1] for show in show_list]
+
+        else:
+            query_list = []
+            show_list = ([[title['show']['title'], title['show']['ids']['slug'], title['show']['year']] for title in self.Trakt.shows(shows_options, "90000")])
+            [query_list.append(show[0]) for show in show_list]
+            self.slug = [show[1] for show in show_list]
+            
+        self.search_trakt_seasons(query_list)
+        
 
     def trakt_tv(self):
         option = inquirer.select(message="Options: ", choices=[
