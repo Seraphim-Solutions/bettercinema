@@ -30,13 +30,12 @@ class Cli():
         self.db = db()
         self.md5crypt = md5Crypt()
         self.Trakt = Trakt()
-        self.movie_names, self.movie_idents, self.movie_sizes, self.movie_postive_votes, self.movie_negative_votes = [], [], [], [], []
+        self.clear_table_data()
         self.movie_links = []
         self.page = 0
         self.user_dict = {}
         users = self.db.read_creds()
         self.has_trakt_auth = None
-        self.clear = os.system('cls' if os.name == 'nt' else 'clear')
         if users != []:
             for username, hash in users:
                 self.user_dict.update({username: hash})
@@ -50,7 +49,14 @@ class Cli():
         self.color_warning = self.config['colors']['warning']
         self.color_info = self.config['colors']['info']
         self.color_primary = self.config['colors']['primary']
-    
+
+    def clear_console(self):
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+    def clear_table_data(self):
+        self.movie_names, self.movie_idents, self.movie_sizes, self.movie_postive_votes, self.movie_negative_votes = [], [], [], [], []
+
+
     def get_salt(self, username):
         salt_xml = self.rp.salt(username)
         xml = ET.fromstring(salt_xml)
@@ -84,6 +90,7 @@ class Cli():
 
             username = user_choice
             password = self.user_dict[username]
+            self.get_wst(username, password)
             return username, password
 
         if use_sotred_account == False:
@@ -109,17 +116,17 @@ class Cli():
         
         self.db.get_current_user()
         self.username = username
-        self.clear
-        self.search()
+        self.clear_console()
+        self.menu()
 
     
     def search_query(self, query: dict):
         self.resutl_list = self.bc.search(query)
         if self.resutl_list == None:
             print(f"[{self.color_info}] > No results found[/]\n")
-            self.search()
+            self.menu()
 
-    def search(self):
+    def menu(self):
             search_type = inquirer.select(message="Options: ", choices=[
                 "Default Search",
                 "Advanced Search",
@@ -132,17 +139,18 @@ class Cli():
                 
                 self.query_dict = {"what": query, "offset": 0, "limit": 25, "category": "video", "sort": ""}
                 self.search_query(self.query_dict)
-                self.list_movies()
+                self.list_movies(query, sort="")
             if search_type == "Advanced Search":
                 self.advanced_search()
 
             if search_type == "Open Link":
                 link = inquirer.text(message="Link: ").execute()
                 self.player.play(link)
+                
 
             if search_type == "Trakt.tv":
                 print("This functionality is not yet implemented.")
-                self.trakt_auth() if self.has_trakt_auth == None else self.search() # temp until trakt handler is implemented | move this to trakt_tv() after trakt handler is implemented
+                self.trakt_auth() if self.has_trakt_auth == None else self.menu() # temp until trakt handler is implemented | move this to trakt_tv() after trakt handler is implemented
                 #self.trakt_tv()
 
     def advanced_search(self):
@@ -168,7 +176,7 @@ class Cli():
         self.query_dict = {"what": query, "offset": offset, "limit": int(limit), "category": category, "sort": sort}
 
         self.search_query(self.query_dict)
-        self.list_movies()
+        self.list_movies(query, sort)
 
     def get_result_data(self):
         for movie in self.resutl_list:  
@@ -179,9 +187,10 @@ class Cli():
             self.movie_negative_votes.append(movie[4])
         return
 
-    def list_movies(self):
+    def list_movies(self, query, sort):
         self.get_result_data()
-        self.movie_table = Table(show_header=True, header_style=self.color_neutral, title="Search Results", title_justify="centre")
+        
+        self.movie_table = Table(show_header=True, header_style=self.color_neutral, title=f'Search Results for \"{query}\" | sort by: {"relevance" if sort == "" else sort}', title_justify="center")
         self.movie_table.add_column("#", style=self.color_primary, justify="middle")
         self.movie_table.add_column("Name", style=self.color_good, justify="middle")
         self.movie_table.add_column("Size", style=self.color_warning, justify="middle")
@@ -196,22 +205,48 @@ class Cli():
         console.print(self.movie_table)
         self.select_item_from_results()
 
+
     def select_item_from_results(self):
-        selected_movie = inquirer.text(message="Select movie [help for options]: ").execute()
+        selected_movie = inquirer.text(message="~> ").execute()
+        commands = ("help", "more", "search", "sort")
+
+        if selected_movie not in commands and selected_movie.isdigit() and int(selected_movie) <= len(self.movie_names):
+            selected_movie_index = int(selected_movie) - 1
+
+            movie_link = self.bc.get_link(ident=self.movie_idents[selected_movie_index], wst=self.wst)
+            if movie_link == "Error 403":
+                print("No link found, maybe the file is password protected.")
+                self.select_item_from_results()
+            else:
+                self.selected_item_options(movie_link)
+
         if selected_movie == "help":
             self.help()
+        
         if selected_movie == "more":
+            self.clear_console()
             self.more_results()
         
+        if "sort " in selected_movie:
+            self.page = 0
+            self.query_dict['offset'] = self.page
+            self.clear_console()
+            self.clear_table_data()
+            self.query_dict["sort"] = selected_movie.split(" ")[1]
+            self.search_query(self.query_dict)
+            self.list_movies(self.query_dict["what"], self.query_dict["sort"])
 
-        selected_movie_index = int(selected_movie) - 1
+        if "search " in selected_movie:
+            self.clear_console()
+            self.clear_table_data()
+            self.query_dict["what"] = selected_movie.replace("search ", "")
+            self.search_query(self.query_dict)
+            self.list_movies(self.query_dict["what"], self.query_dict["sort"])
 
-        movie_link = self.bc.get_link(ident=self.movie_idents[selected_movie_index], wst=self.wst)
-        if movie_link == "Error 403":
-            print("No link found, maybe the file is password protected.")
-            self.select_item_from_results()
         else:
-            self.selected_item_options(movie_link)
+            print("Invalid input. Type \"help\" for options.")
+            self.select_item_from_results()
+        
         
     def selected_item_options(self, movie_link):
         item_options = inquirer.select(message="Select item options: ", choices=[
@@ -223,17 +258,19 @@ class Cli():
         if item_options == "Download":
             filename = inquirer.text(message="Filename: ").execute()
             self.rp.download(filename, movie_link)
-            self.search()
+            self.menu()
 
         if item_options == "Play in VLC [Network Stream]":
             self.player.play(movie_link)
-            
+            self.menu()
+
         if item_options == "Play in Infuse [Apple only]":
             self.player_infuse.play(movie_link)
+            self.menu()
 
         if item_options == "Get Link":
             print(movie_link)
-            self.search()
+            self.menu()
 
 
     def trakt_tv_movies(self):
@@ -370,10 +407,13 @@ class Cli():
         self.page += 25
         self.query_dict['offset'] = self.page
         self.resutl_list = self.bc.search(self.query_dict)
-        self.list_movies()
+        self.list_movies(self.query_dict["what"])
 
     def help(self):
-        print("Select movie by typing the number of the movie or 'more' for more results")
+        print("Select movie by typing the # (number) of the movie. \
+        \n'more' for more results. \
+        \n'search \[query]' for extensive search. \
+        \n'sort [type]' for sorting type. (largest, smallest, rating, recent, \"\" for relevance")
         self.select_item_from_results()
  
 if __name__ == '__main__':
