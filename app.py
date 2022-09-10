@@ -82,7 +82,7 @@ class Cli():
         return hashlib.sha1(self.md5crypt.md5crypt(pw=password, salt=salt).encode('utf-8')).hexdigest()
     
     def stored_account(self):
-        use_sotred_account = inquirer.confirm(message="Use stored account?: ").execute()
+        use_sotred_account = inquirer.confirm(message="Use stored account?: ", default=True).execute()
         if use_sotred_account:
             user_choice = inquirer.select(message="Choose account: ", choices=[
                 *self.user_dict
