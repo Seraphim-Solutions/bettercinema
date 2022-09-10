@@ -9,7 +9,7 @@ from rich.table import Table
 import xml.etree.ElementTree as ET
 import hashlib
 import json
-import time
+import sys 
 
 from api.api import BetterCinemaAPI
 from handlers.request_parser import Handler
@@ -214,7 +214,7 @@ class Cli():
 
     def select_item_from_results(self):
         selected_movie = inquirer.text(message="~> ").execute()
-        commands = ("help", "more", "search", "sort")
+        commands = ("help", "more", "search", "sort", "exit")
 
         if selected_movie not in commands and selected_movie.isdigit() and int(selected_movie) <= len(self.movie_names):
             selected_movie_index = int(selected_movie) - 1
@@ -248,6 +248,11 @@ class Cli():
             self.query_dict["what"] = selected_movie.replace("search ", "")
             self.search_query(self.query_dict)
             self.list_movies(self.query_dict["what"], self.query_dict["sort"])
+
+        if selected_movie == "exit":
+            self.clear_console()
+            # close program
+            sys.exit()
 
         else:
             print("Invalid input. Type \"help\" for options.")
@@ -419,7 +424,8 @@ class Cli():
         print("Select movie by typing the # (number) of the movie. \
         \n'more' for more results. \
         \n'search \[query]' for extensive search. \
-        \n'sort [type]' for sorting type. (largest, smallest, rating, recent, \"\" for relevance")
+        \n'sort [type]' for sorting type. (largest, smallest, rating, recent, \"\" for relevance \
+        \n'exit' to exit.")
         self.select_item_from_results()
  
 if __name__ == '__main__':
