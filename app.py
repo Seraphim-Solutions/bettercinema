@@ -127,31 +127,37 @@ class Cli():
             self.menu()
 
     def menu(self):
-            search_type = inquirer.select(message="Options: ", choices=[
-                "Default Search",
-                "Advanced Search",
-                "Open Link",
-                Choice("Trakt.tv", "Trakt.tv [Beta]")],
-                default="Default Search").execute()
-            if search_type == "Default Search":
-            # seach for movies with self.bc and print movies
-                query = inquirer.text(message="Search for movie: ").execute()
-                
-                self.query_dict = {"what": query, "offset": 0, "limit": 25, "category": "video", "sort": ""}
-                self.search_query(self.query_dict)
-                self.list_movies(query, sort="")
-            if search_type == "Advanced Search":
-                self.advanced_search()
-
-            if search_type == "Open Link":
-                link = inquirer.text(message="Link: ").execute()
-                self.player.play(link)
-                
-
-            if search_type == "Trakt.tv":
-                print("This functionality is not yet implemented.")
-                self.trakt_auth() if self.has_trakt_auth == None else self.menu() # temp until trakt handler is implemented | move this to trakt_tv() after trakt handler is implemented
-                #self.trakt_tv()
+        self.clear_table_data()
+        search_type = inquirer.select(message="Options: ", choices=[
+            "Default Search",
+            "Advanced Search",
+            "Open Link",
+            Choice("Trakt.tv", "Trakt.tv [Beta]")],
+            default="Default Search").execute()
+        
+        if search_type == "Default Search":
+            self.clear_console()
+        # seach for movies with self.bc and print movies
+            query = inquirer.text(message="Search for movie: ").execute()
+            
+            self.query_dict = {"what": query, "offset": 0, "limit": 25, "category": "video", "sort": ""}
+            self.search_query(self.query_dict)
+            self.list_movies(query, sort="")
+        
+        if search_type == "Advanced Search":
+            self.clear_console()
+            self.advanced_search()
+        
+        if search_type == "Open Link":
+            self.clear_console()
+            link = inquirer.text(message="Link: ").execute()
+            self.player.play(link)
+            
+        if search_type == "Trakt.tv":
+            self.clear_console()
+            print("This functionality is not yet implemented.")
+            self.trakt_auth() if self.has_trakt_auth == None else self.menu() # temp until trakt handler is implemented | move this to trakt_tv() after trakt handler is implemented
+            #self.trakt_tv()
 
     def advanced_search(self):
         query = inquirer.text(message="Name: ").execute()
