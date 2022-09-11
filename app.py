@@ -9,7 +9,8 @@ from rich.table import Table
 import xml.etree.ElementTree as ET
 import hashlib
 import json
-import sys 
+import sys
+import fade
 
 from api.api import BetterCinemaAPI
 from handlers.request_parser import Handler
@@ -42,13 +43,7 @@ class Cli():
         
         with open('config/config.json', 'r') as f:
             self.config = json.load(f)
-        
-        self.color_neutral = self.config['colors']['neutral']
-        self.color_good = self.config['colors']['good']
-        self.color_bad = self.config['colors']['bad']
-        self.color_warning = self.config['colors']['warning']
-        self.color_info = self.config['colors']['info']
-        self.color_primary = self.config['colors']['primary']
+        self.load_colors()
 
     def clear_console(self):
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -56,6 +51,22 @@ class Cli():
     def clear_table_data(self):
         self.movie_names, self.movie_idents, self.movie_sizes, self.movie_postive_votes, self.movie_negative_votes = [], [], [], [], []
 
+    def load_colors(self, theme='default'):
+        self.color_neutral = self.config['colors'][theme]['neutral']
+        self.color_good = self.config['colors'][theme]['good']
+        self.color_bad = self.config['colors'][theme]['bad']
+        self.color_warning = self.config['colors'][theme]['warning']
+        self.color_info = self.config['colors'][theme]['info']
+        self.color_primary = self.config['colors'][theme]['primary']
+        self.color_banner = self.config['banner']['color']
+
+    def settings(self):
+        themes = [theme for theme in self.config['colors']]
+        options = inquirer.select(message="Color Theme: ", choices=[*themes]).execute()
+        
+        if options:
+            self.load_colors(options)
+            self.menu()
 
     def get_salt(self, username):
         salt_xml = self.rp.salt(username)
@@ -128,11 +139,13 @@ class Cli():
 
     def menu(self):
         self.clear_table_data()
+        print(f"[{'blink ' + self.color_banner if self.config['banner']['animation'] == 1 else self.color_banner}]{self.config['banner']['text']}[/]\n          🎬 [i]DanniSec's & Trivarialthea's Project[/] 🎬\n")
         search_type = inquirer.select(message="Options: ", choices=[
             "Default Search",
             "Advanced Search",
             "Open Link",
-            Choice("Trakt.tv", "Trakt.tv [Beta]")],
+            Choice("Trakt.tv", "Trakt.tv [Beta]"),
+            "Settings"],
             default="Default Search").execute()
         
         if search_type == "Default Search":
@@ -158,6 +171,10 @@ class Cli():
             print("This functionality is not yet implemented.")
             self.trakt_auth() if self.has_trakt_auth == None else self.menu() # temp until trakt handler is implemented | move this to trakt_tv() after trakt handler is implemented
             #self.trakt_tv()
+        
+        if search_type == "Settings":
+            self.clear_console()
+            self.settings()
 
     def advanced_search(self):
         query = inquirer.text(message="Name: ").execute()
@@ -206,7 +223,7 @@ class Cli():
             self.movie_names[i],
             f"[{self.color_warning}]{self.movie_sizes[i]}[/]",
             (f"[{self.color_good}]{self.movie_postive_votes[i]}[/] [{self.color_neutral}]|[/] [{self.color_bad}]{self.movie_negative_votes[i]}[/]"),
-            style=(self.color_neutral if self.movie_postive_votes[i] == self.movie_negative_votes[i] else ("bold" if self.movie_postive_votes[i] >= self.movie_negative_votes[i] else self.color_bad)))
+            style=(self.color_neutral if self.movie_postive_votes[i] == self.movie_negative_votes[i] else ("" if self.movie_postive_votes[i] >= self.movie_negative_votes[i] else self.color_bad)))
 
         console.print(self.movie_table)
         self.select_item_from_results()
@@ -214,7 +231,7 @@ class Cli():
 
     def select_item_from_results(self):
         selected_movie = inquirer.text(message="~> ").execute()
-        commands = ("help", "more", "search", "sort", "exit")
+        commands = ("help", "more", "search", "sort", "menu", "exit")
 
         if selected_movie not in commands and selected_movie.isdigit() and int(selected_movie) <= len(self.movie_names):
             selected_movie_index = int(selected_movie) - 1
@@ -249,6 +266,10 @@ class Cli():
             self.search_query(self.query_dict)
             self.list_movies(self.query_dict["what"], self.query_dict["sort"])
 
+        if selected_movie == "menu":
+            self.clear_console()
+            self.menu()
+        
         if selected_movie == "exit":
             self.clear_console()
             # close program
