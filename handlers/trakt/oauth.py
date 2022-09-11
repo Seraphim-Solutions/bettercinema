@@ -8,6 +8,7 @@ from db_handler import db
 class oauth:
     def __init__(self):
         self.db = db()
+        self.has_auth = False
         with open('./config/trakt_config.json') as f:
             self.trakt_config = json.load(f)
 
@@ -58,4 +59,5 @@ class oauth:
 
         response_body = request.json()
 
-        self.db.add_trakt_user_data(response_body['user']['username'], response_body['user']['private'], response_body['user']['vip'], response_body['user']['vip_ep'], response_body['user']['ids']['slug'])
+        self.db.add_trakt_user_data(response_body['user']['username'], response_body['user']['private'], response_body['user']['vip'], response_body['user']['vip_ep'], response_body['user']['ids']['slug'] )
+        self.has_auth = True

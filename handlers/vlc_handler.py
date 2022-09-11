@@ -12,7 +12,7 @@ class Player():
         if platform.system() == 'Windows':
             subprocess.run([f'{self.vlc_path}', url])
         elif platform.system() == 'Linux':
-            os.popen(f'vlc {url} --fullscreen')
+            os.popen(f'vlc {url} --fullscreen 2>/dev/null')
         elif platform.system() == 'Darwin':
             os.system(f'/Applications/VLC.app/Contents/MacOS/VLC {url}')
         else:

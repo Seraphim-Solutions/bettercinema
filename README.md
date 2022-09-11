@@ -88,6 +88,6 @@ Selecting any of these search options will bring a table with results.
 
 This part is quite self-explanatory, to select a specific movie just type the index number of it and it will instantly trigger VLC to open with that specific file.
 
-If can’t find what you have been looking for, you can try command `more` for more results, or just try other filters in Advanced Search.
+For more options when browsing the result table, type `help`. 
 
 ## Have any suggestions? Use [Discussion](https://github.com/Seraphim-Solutions/bettercinema/discussions/categories/ideas) or contact me on Discord Danni#1965
