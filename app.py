@@ -255,7 +255,8 @@ class Cli():
             sys.exit()
 
         else:
-            print("Invalid input. Type \"help\" for options.")
+            print("Invalid input.")
+            self.help()
             self.select_item_from_results()
         
         
@@ -269,19 +270,19 @@ class Cli():
         if item_options == "Download":
             filename = inquirer.text(message="Filename: ").execute()
             self.rp.download(filename, movie_link)
-            self.menu()
+            self.select_item_from_results()
 
         if item_options == "Play in VLC [Network Stream]":
             self.player.play(movie_link)
-            self.menu()
+            self.select_item_from_results()
 
         if item_options == "Play in Infuse [Apple only]":
             self.player_infuse.play(movie_link)
-            self.menu()
+            self.select_item_from_results()
 
         if item_options == "Get Link":
             print(movie_link)
-            self.menu()
+            self.select_item_from_results()
 
 
     def trakt_tv_movies(self):
@@ -418,14 +419,14 @@ class Cli():
         self.page += 25
         self.query_dict['offset'] = self.page
         self.resutl_list = self.bc.search(self.query_dict)
-        self.list_movies(self.query_dict["what"])
+        self.list_movies(self.query_dict["what"], self.query_dict["sort"])
 
     def help(self):
         print("Select movie by typing the # (number) of the movie. \
-        \n'more' for more results. \
-        \n'search \[query]' for extensive search. \
-        \n'sort [type]' for sorting type. (largest, smallest, rating, recent, \"\" for relevance \
-        \n'exit' to exit.")
+        \n'[b]more[/]' for more results. \
+        \n'[b]search \[query][/]' for extensive search. \
+        \n'[b]sort \[type][/]' for sorting type. (largest, smallest, rating, recent, blank [i][b]= 'sort '[/] for relevance \
+        \n'[b]exit[/]' to exit.")
         self.select_item_from_results()
  
 if __name__ == '__main__':
