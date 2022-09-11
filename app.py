@@ -446,6 +446,7 @@ class Cli():
         \n'[b]more[/]' for more results. \
         \n'[b]search \[query][/]' for extensive search. \
         \n'[b]sort \[type][/]' for sorting type. (largest, smallest, rating, recent, blank [i][b]= 'sort '[/] for relevance \
+        \n'[b]menu[/]' for main menu. \
         \n'[b]exit[/]' to exit.")
         self.select_item_from_results()
  
