@@ -4,22 +4,20 @@ import re
 
 class version_handler:
     def __init__(self):
-        self.version = "v1.1.1"
+        self.version = "v1.1.0"
+        url = "https://api.github.com/repos/Seraphim-Solutions/bettercinema/releases/latest"
+        self.response = requests.get(url).json()
         pass
 
     def get_version(self):
-        url = "https://api.github.com/repos/Seraphim-Solutions/bettercinema/releases/latest"
-        response = requests.request("GET", url)
-        latest_tag = response.json()['tag_name']
+        latest_tag = self.response['tag_name']
         return latest_tag
 
     def get_latest_version(self):
-        url = "https://api.github.com/repos/Seraphim-Solutions/bettercinema/releases/latest"
-        response = requests.request("GET", url)
-        latest_tag = response.json()['tag_name']
+        latest_tag = self.response['tag_name']
 
         if latest_tag != self.version:
-            for assets in response.json()['assets']:
+            for assets in self.response['assets']:
                 if re.match(f"BetterCinema_{platform.system()}*", assets['name']):
                     return f"Version {latest_tag} available: {assets['browser_download_url']}"
         else:
