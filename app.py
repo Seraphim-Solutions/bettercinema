@@ -345,7 +345,7 @@ class Cli():
         query = f"{name}.S{int(self.season_selection):02d}E{int(episode):02d}"
         self.query_dict = {"what": query, "offset": 0, "limit": 25, "category": "video", "sort": ""}
         self.search_query(self.query_dict)
-        self.list_movies()
+        self.list_movies(self.query_dict["what"], self.query_dict["sort"])
 
     
     def trakt_season_list(self, seasons, slug):
