@@ -6,6 +6,9 @@ __pycache__/
 # Config
 config
 
+# vscode
+.vscode
+
 # Database
 data.db
 

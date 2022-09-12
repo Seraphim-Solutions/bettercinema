@@ -1,7 +1,10 @@
+"""imports"""
 import json
 import os
 
+
 class ConfigHandler:
+    """loads the default config files"""
     def __init__(self):
         self.config ={
     "_comment": "you can find all usable colors here https://rich.readthedocs.io/en/stable/appendix/colors.html and styles here https://rich.readthedocs.io/en/stable/style.html, use bold for less eye strain",
@@ -40,17 +43,25 @@ class ConfigHandler:
             "client_secret": "5b90899d0e7f3b71d98b7c2579b841d99843d1f102b62ae709ddbf4972c84b4f"
         }
     }
-    
+
+
         if not os.path.exists('config'):
             os.mkdir('config')
         self.create_configs()
 
+
     def create_configs(self):
+        """creates the config files"""
         config_names = ["config.json", "trakt_config.json"]
         for config_name in config_names:
             if not os.path.exists(f'config/{config_name}'):
-                with open(f'config/{config_name}', 'w') as f:
-                    if config_name == "config.json":
-                        json.dump(self.config, f, indent=4)
-                    else:
-                        json.dump(self.trakt_config, f, indent=4)
+                self.write_configs(config_name)
+
+
+    def write_configs(self, name):
+        """writes the config files"""
+        with open(f'config/{name}', 'w', encoding="utf-8") as file:
+            if name == "config.json":
+                json.dump(self.config, file, indent=4)
+            else:
+                json.dump(self.trakt_config, file, indent=4)
