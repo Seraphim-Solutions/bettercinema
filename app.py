@@ -141,6 +141,8 @@ class Cli():
 
     def menu(self):
         self.clear_table_data()
+        self.clear_console()
+        print(f"[bold white]New version available: {self.version.get_version()}[/]") if self.version.version != self.version.get_version() else None
         print(f"[{'blink ' + self.color_banner if self.config['banner']['animation'] == 1 else self.color_banner}]{self.config['banner']['text']}[/]\n          🎬 [i]DanniSec's & Trivarialthea's Project[/] 🎬\n")
         search_type = inquirer.select(message="Options: ", choices=[
             "Default Search",
@@ -183,7 +185,9 @@ class Cli():
             if setting == "Color Theme":
                 self.color_theme()
             if setting == "Check for updates":
-                print(self.version.get_version())
+                print(self.version.get_latest_version())
+                input("Press enter to go back to the menu...")
+                self.menu()
 
 
     def advanced_search(self):

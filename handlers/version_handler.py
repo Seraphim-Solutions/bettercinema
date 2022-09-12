@@ -11,6 +11,12 @@ class version_handler:
         url = "https://api.github.com/repos/Seraphim-Solutions/bettercinema/releases/latest"
         response = requests.request("GET", url)
         latest_tag = response.json()['tag_name']
+        return latest_tag
+
+    def get_latest_version(self):
+        url = "https://api.github.com/repos/Seraphim-Solutions/bettercinema/releases/latest"
+        response = requests.request("GET", url)
+        latest_tag = response.json()['tag_name']
 
         if latest_tag != self.version:
             for assets in response.json()['assets']:
