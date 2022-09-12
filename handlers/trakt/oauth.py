@@ -1,8 +1,6 @@
 import requests
 import json
-import os, sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from db_handler import db
+from handlers.db_handler import db
 
 
 class oauth:
