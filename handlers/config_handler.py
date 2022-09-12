@@ -3,7 +3,7 @@ import os
 
 class ConfigHandler:
     def __init__(self):
-        self.config ={
+        config ={
     "_comment": "you can find all usable colors here https://rich.readthedocs.io/en/stable/appendix/colors.html and styles here https://rich.readthedocs.io/en/stable/style.html, use bold for less eye strain",
     "colors": 
     {
@@ -33,19 +33,22 @@ class ConfigHandler:
         "animation": 1
     }
 }  
-        self.trakt_config ={
+        trakt_config ={
         "application_auth":
         {    
             "client_id": "804f5a54532dc596711d2534ba689725682e481fcac2b1f70f860f11b689db9c",
             "client_secret": "5b90899d0e7f3b71d98b7c2579b841d99843d1f102b62ae709ddbf4972c84b4f"
         }
     }
-
+        config_names = ["config.json", "trakt_config.json"]
         if not os.path.exists('config'):
             os.mkdir('config')
-        if not os.path.exists('config/config.json'):
-            with open('config/config.json', 'w') as f:
-                json.dump(self.config, f)
-        if not os.path.exists('config/trakt_config.json'):
-            with open('config/trakt_config.json', 'w') as f:
-                json.dump(self.trakt_config, f)
+
+        # create config files if they don't exist
+        for config_name in config_names:
+            if not os.path.exists(f'config/{config_name}'):
+                with open(f'config/{config_name}', 'w') as f:
+                    if config_name == "config.json":
+                        json.dump(config, f, indent=4)
+                    else:
+                        json.dump(trakt_config, f, indent=4)
