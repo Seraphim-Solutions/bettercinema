@@ -3,7 +3,7 @@ import platform
 
 class version_handler:
     def __init__(self):
-        self.version = "v1.0.0"
+        self.version = "v1.1.1"
         pass
 
     def get_version(self):
