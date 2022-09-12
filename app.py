@@ -1,3 +1,4 @@
+#!/usr/bin/evn python333
 from textwrap import wrap
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
@@ -171,9 +172,10 @@ class Cli():
         if search_type == "Trakt.tv":
             self.clear_console()
             print("This functionality is not yet implemented.")
+            self.menu()
             #self.trakt_auth() if self.has_trakt_auth == None else self.menu() # temp until trakt handler is implemented | move this to trakt_tv() after trakt handler is implemented
             #self.trakt_tv()
-        
+            
         if search_type == "Settings":
             self.clear_console()
             self.settings()
