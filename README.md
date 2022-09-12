@@ -82,7 +82,7 @@ If you select Advanced Search these are inputs, the tool will ask you for:
 
 Selecting any of these search options will bring a table with results.
 
-![Result table for advanced search](https://i.imgur.com/VyB7uWP.png)
+![Result table for advanced search](https://i.imgur.com/6JqRGZx.png)
 
 *`Name` color is selected by upvotes(green) / downvotes(red), white color is for neutral votes 50/50*
 
