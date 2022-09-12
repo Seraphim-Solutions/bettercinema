@@ -185,7 +185,7 @@ class Cli():
             if setting == "Color Theme":
                 self.color_theme()
             if setting == "Check for updates":
-                print(f"[{self.color_neutral}]{self.version.get_latest_version()}[/]")
+                print(f"[{self.color_neutral}]{self.version.check_version()}[/]")
                 input("Press enter to go back to the menu...")
                 self.menu()
 

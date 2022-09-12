@@ -4,7 +4,7 @@ import re
 
 class version_handler:
     def __init__(self):
-        self.version = "v1.1.1"
+        self.version = "v1.1.0"
         url = "https://api.github.com/repos/Seraphim-Solutions/bettercinema/releases/latest"
         self.response = requests.get(url).json()
         pass
@@ -13,12 +13,15 @@ class version_handler:
         latest_tag = self.response['tag_name']
         return latest_tag
 
-    def get_latest_version(self):
+    def check_version(self):
         latest_tag = self.response['tag_name']
-
-        if latest_tag != self.version:
-            for assets in self.response['assets']:
-                if re.match(f"BetterCinema_{platform.system()}*", assets['name']):
-                    return f"Version {latest_tag} available: {assets['browser_download_url']}"
+        if latest_tag == self.version:
+            return "You are running the latest version."
         else:
-            return "You are up to date"
+            print(f"Version {latest_tag} available.")
+            return self.get_latest_version()
+
+    def get_latest_version(self):
+        for assets in self.response['assets']:
+            if re.match(f"BetterCinema_{platform.system()}*", assets['name']):
+                return f"Direct link: {assets['browser_download_url']}"    
