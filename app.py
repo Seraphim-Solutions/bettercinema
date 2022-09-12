@@ -1,4 +1,3 @@
-#!/usr/bin/evn python333
 from textwrap import wrap
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
