@@ -1,5 +1,6 @@
 import requests
 import platform
+import re
 
 class version_handler:
     def __init__(self):
@@ -9,16 +10,11 @@ class version_handler:
     def get_version(self):
         url = "https://api.github.com/repos/Seraphim-Solutions/bettercinema/releases/latest"
         response = requests.request("GET", url)
+        latest_tag = response.json()['tag_name']
 
-        if response.json()['tag_name'] != self.version:
+        if latest_tag != self.version:
             for assets in response.json()['assets']:
-                if assets['name'] == "BetterCinema_Windows.exe" and platform.system() == "Windows":
-                    return "New version available: " + assets['browser_download_url']
-                if assets['name'] == "BetterCinema_MacOS" and platform.system() == 'Darwin':
-                    return "New version available: " + assets['browser_download_url']
-                if assets['name'] == "BetterCinema_Linux" and platform.system() == 'Linux':
-                    return "New version available: " + assets['browser_download_url']
-                else:
-                    return "You are up to date"
-
-print(version_handler().get_version())
+                if re.match(f"BetterCinema_{platform.system()}*", assets['name']):
+                    return f"Version {latest_tag} available: {assets['browser_download_url']}"
+        else:
+            return "You are up to date"

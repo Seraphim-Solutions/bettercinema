@@ -62,7 +62,7 @@ class Cli():
         self.color_primary = self.config['colors'][theme]['primary']
         self.color_banner = self.config['banner']['color']
 
-    def settings(self):
+    def color_theme(self):
         themes = [theme for theme in self.config['colors']]
         options = inquirer.select(message="Color Theme: ", choices=[*themes]).execute()
         
@@ -177,7 +177,14 @@ class Cli():
             
         if search_type == "Settings":
             self.clear_console()
-            self.settings()
+            setting = inquirer.select(message="Settings: ", choices=[
+                "Color Theme",
+                "Check for updates"]).execute()
+            if setting == "Color Theme":
+                self.color_theme()
+            if setting == "Check for updates":
+                print(self.version.get_version())
+
 
     def advanced_search(self):
         query = inquirer.text(message="Name: ").execute()
