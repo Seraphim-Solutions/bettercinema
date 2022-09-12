@@ -32,6 +32,7 @@ class Cli():
         self.db = db()
         self.md5crypt = md5Crypt()
         self.Trakt = Trakt()
+        self.version = version_handler()
         self.clear_table_data()
         self.movie_links = []
         self.page = 0
@@ -453,7 +454,7 @@ class Cli():
         self.select_item_from_results()
  
 if __name__ == '__main__':
-    os.system(f"title BetterCinema {version_handler.version}")
+    os.system(f"title BetterCinema {version_handler().version}")
     pretty.install()
     install()
     console = Console()
