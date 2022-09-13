@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Config
+config
+
+# vscode
+.vscode
+
 # Database
 data.db
 

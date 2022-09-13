@@ -1,24 +1,27 @@
 import requests
 import platform
+import re
 
 class version_handler:
     def __init__(self):
-        self.version = "v1.0.0"
+        self.version = "v1.1.1"
+        url = "https://api.github.com/repos/Seraphim-Solutions/bettercinema/releases/latest"
+        self.response = requests.get(url).json()
         pass
 
     def get_version(self):
-        url = "https://api.github.com/repos/Seraphim-Solutions/bettercinema/releases/latest"
-        response = requests.request("GET", url)
+        latest_tag = self.response['tag_name']
+        return latest_tag
 
-        if response.json()['tag_name'] != self.version:
-            for assets in response.json()['assets']:
-                if assets['name'] == "BetterCinema_Windows.exe" and platform.system() == "Windows":
-                    return "New version available: " + assets['browser_download_url']
-                if assets['name'] == "BetterCinema_MacOS" and platform.system() == 'Darwin':
-                    return "New version available: " + assets['browser_download_url']
-                if assets['name'] == "BetterCinema_Linux" and platform.system() == 'Linux':
-                    return "New version available: " + assets['browser_download_url']
-                else:
-                    return "You are up to date"
+    def check_version(self):
+        latest_tag = self.response['tag_name']
+        if latest_tag == self.version:
+            return "You are running the latest version."
+        else:
+            print(f"Version {latest_tag} available.")
+            return self.get_latest_version()
 
-print(version_handler().get_version())
+    def get_latest_version(self):
+        for assets in self.response['assets']:
+            if re.match(f"BetterCinema_{platform.system()}*", assets['name']):
+                return f"Direct link: {assets['browser_download_url']}"    
