@@ -1,28 +1,30 @@
-from textwrap import wrap
-from InquirerPy import inquirer
-from InquirerPy.base.control import Choice
+# from textwrap import wrap
 import os
+import hashlib
+import json
+import sys
+import xml.etree.ElementTree as ET
 from rich import print, pretty
 from rich.console import Console
 from rich.traceback import install
 from rich.table import Table
-import xml.etree.ElementTree as ET
-import hashlib
-import json
-import sys
+from InquirerPy import inquirer
+from InquirerPy.base.control import Choice
 
+from misc.md5Crypt import md5Crypt
 from api.api import BetterCinemaAPI
 from handlers.request_parser import Handler
 from handlers.vlc_handler import Player
 from handlers.infuse_handler import Player_Infuse
-from misc.md5Crypt import md5Crypt
 from handlers.db_handler import db
 from handlers.config_handler import ConfigHandler
-from handlers.trakt_handler import Trakt 
-from handlers.trakt.oauth import oauth
+from handlers.trakt_handler import Trakt
+# from handlers.trakt.oauth import oauth
 from handlers.version_handler import version_handler
 
+
 class Cli():
+    """handles the cli"""
     def __init__(self):
         ConfigHandler()
         self.bc = BetterCinemaAPI()
@@ -31,29 +33,36 @@ class Cli():
         self.player_infuse = Player_Infuse()
         self.db = db()
         self.md5crypt = md5Crypt()
-        self.Trakt = Trakt()
+        self.trakt = Trakt()
         self.version = version_handler()
         self.clear_table_data()
         self.movie_links = []
         self.page = 0
-        self.user_dict = {}
+        self.username = ""
+        self.user_dict, self.query_dict = {}, {}
         users = self.db.read_creds()
         self.has_trakt_auth = None
         if users != []:
-            for username, hash in users:
-                self.user_dict.update({username: hash})
+            for username, pwhash in users:
+                self.user_dict.update({username: pwhash})
         
-        with open('config/config.json', 'r') as f:
+        with open('config/config.json', 'r', encoding="utf-8") as f:
             self.config = json.load(f)
         self.load_colors()
 
+
     def clear_console(self):
+        """Clears the console"""
         os.system('cls' if os.name == 'nt' else 'clear')
 
+
     def clear_table_data(self):
+        """Clears the table data"""
         self.movie_names, self.movie_idents, self.movie_sizes, self.movie_postive_votes, self.movie_negative_votes = [], [], [], [], []
 
+
     def load_colors(self, theme='default'):
+        """Loads the colors from the config file"""
         self.color_neutral = self.config['colors'][theme]['neutral']
         self.color_good = self.config['colors'][theme]['good']
         self.color_bad = self.config['colors'][theme]['bad']
@@ -63,6 +72,7 @@ class Cli():
         self.color_banner = self.config['banner']['color']
 
     def color_theme(self):
+        """Changes the color theme"""
         themes = [theme for theme in self.config['colors']]
         options = inquirer.select(message="Color Theme: ", choices=[*themes]).execute()
         
@@ -71,6 +81,7 @@ class Cli():
             self.menu()
 
     def get_salt(self, username):
+        """Gets the salt for the password"""
         salt_xml = self.rp.salt(username)
         xml = ET.fromstring(salt_xml)
         if not xml.find('status').text == 'OK':
@@ -82,6 +93,7 @@ class Cli():
         return salt
 
     def get_wst(self, username, password):
+        """Gets the wst token"""
         wst_xml = self.rp.login(username, password)
         xml = ET.fromstring(wst_xml)
         
@@ -92,9 +104,11 @@ class Cli():
         self.wst = xml.find('token').text
 
     def get_password_hash(self, password, salt):
+        """Gets the password hash"""
         return hashlib.sha1(self.md5crypt.md5crypt(pw=password, salt=salt).encode('utf-8')).hexdigest()
     
     def stored_account(self):
+        """Gets the stored account from the database"""
         use_sotred_account = inquirer.confirm(message="Use stored account?: ", default=True).execute()
         if use_sotred_account:
             user_choice = inquirer.select(message="Choose account: ", choices=[
@@ -114,6 +128,7 @@ class Cli():
             return username, password
 
     def login(self):
+        """Logs the user into Webshare"""
         if self.db.read_creds() == []:
             username = inquirer.text(message="Username: ").execute()
             password = inquirer.secret(message="Password: ").execute()
@@ -134,12 +149,15 @@ class Cli():
 
     
     def search_query(self, query: dict):
-        self.resutl_list = self.bc.search(query)
-        if self.resutl_list == None:
+        """Searches for soemthing via webshare"""
+        self.result_list = self.bc.search(query)
+        if self.result_list is None:
             print(f"[{self.color_info}] > No results found[/]\n")
             self.menu()
 
+
     def menu(self):
+        """Shows the main menu"""
         self.clear_table_data()
         self.clear_console()
         print(f"[{self.color_warning}]New version available: {self.version.get_version()}[/]") if self.version.version != self.version.get_version() else None
@@ -186,11 +204,12 @@ class Cli():
                 self.color_theme()
             if setting == "Check for updates":
                 print(f"[{self.color_neutral}]{self.version.check_version()}[/]")
-                input("Press enter to go back to the menu...")
+                input("\nPress enter to go back to the menu...")
                 self.menu()
 
 
     def advanced_search(self):
+        """Shows the advanced search sub-menu"""
         query = inquirer.text(message="Name: ").execute()
         limit = inquirer.text(message="Limit [defaul is 25]: ").execute()
         offset = 0
@@ -216,7 +235,8 @@ class Cli():
         self.list_movies(query, sort)
 
     def get_result_data(self):
-        for movie in self.resutl_list:  
+        """Parses data from the result list"""
+        for movie in self.result_list:  
             self.movie_idents.append(movie[0])
             self.movie_names.append(movie[1])
             self.movie_sizes.append(movie[2])
@@ -225,6 +245,7 @@ class Cli():
         return
 
     def list_movies(self, query, sort):
+        """Generates table with results"""
         self.get_result_data()
         
         self.movie_table = Table(show_header=True, header_style=self.color_neutral, title=f'Search Results for \"{query}\" | sort by: {"relevance" if sort == "" else sort}', title_justify="center")
@@ -244,6 +265,7 @@ class Cli():
 
 
     def select_item_from_results(self):
+        """Selects an item from the results"""
         selected_movie = inquirer.text(message="~> ").execute()
         commands = ("help", "more", "search", "sort", "menu", "exit")
 
@@ -296,6 +318,7 @@ class Cli():
         
         
     def selected_item_options(self, movie_link):
+        """Shows options for the selected item"""
         item_options = inquirer.select(message="Select item options: ", choices=[
             "Download",
             "Get Link",
@@ -321,6 +344,7 @@ class Cli():
 
 
     def trakt_tv_movies(self):
+        """Shows movies from trakt.tv depending on the selected category"""
         movies_options = inquirer.fuzzy(message="Options: ", choices=[
             Choice("trending", "Trending"),
             Choice("popular", "Popular"),
@@ -332,10 +356,11 @@ class Cli():
         
         
         if movies_options:
-            print(self.Trakt.movies(movies_options))
+            print(self.trakt.movies(movies_options))
 
 
     def trakt_episodes(self, episodes):
+        """Shows episodes from trakt.tv depending on the selected season"""
         episode_name = [episode['title'] for episode in episodes]
         episode_number = [episode_count for episode_count in range(1, len(episode_name) + 1)]
         choices = [Choice(str(episode_number[i]), f"E:{episode_number[i]} {episode_name[i]}") for i in range(len(episode_name))]
@@ -349,25 +374,28 @@ class Cli():
 
     
     def trakt_season_list(self, seasons, slug):
+        """Shows seasons from trakt.tv depending on the selected show"""
         season_list = [Choice(season, f"Season {season}") for season in range(seasons)]
         
         self.season_selection = inquirer.fuzzy(message="Select season: ", choices=season_list).execute()
         
-        episodes = self.Trakt.seasons(slug, self.season_selection)
+        episodes = self.trakt.seasons(slug, self.season_selection)
         self.trakt_episodes(episodes)
 
     
     def search_trakt_seasons(self, query_list):
+        """Searches for a show's seasons on trakt.tv"""
         choices = [Choice(self.slug[x], query_list[x]) for x in range(len(self.slug))]
         selection = inquirer.fuzzy(message="Select show: ", choices=[
                 *choices
                 ]).execute()
-        seasons = self.Trakt.seasons(selection)
+        seasons = self.trakt.seasons(selection)
         self.selcted_slug = selection
         self.trakt_season_list(len(seasons), selection)
 
 
     def trakt_tv_shows(self):
+        """Shows shows from trakt.tv depending on the selected category"""
         shows_options = inquirer.fuzzy(message="Options: ", choices=[
             Choice("trending", "Trending"),
             Choice("popular", "Popular"),
@@ -379,13 +407,13 @@ class Cli():
 
         if "popular" == shows_options:
             query_list = []
-            show_list = ([[title['title'], title['ids']['slug'], title['year']] for title in self.Trakt.shows(shows_options, "90000")])
+            show_list = ([[title['title'], title['ids']['slug'], title['year']] for title in self.trakt.shows(shows_options, "90000")])
             [query_list.append(show[0]) for show in show_list]
             self.slug = [show[1] for show in show_list]
 
         else:
             query_list = []
-            show_list = ([[title['show']['title'], title['show']['ids']['slug'], title['show']['year']] for title in self.Trakt.shows(shows_options, "90000")])
+            show_list = ([[title['show']['title'], title['show']['ids']['slug'], title['show']['year']] for title in self.trakt.shows(shows_options, "90000")])
             [query_list.append(show[0]) for show in show_list]
             self.slug = [show[1] for show in show_list]
             
@@ -393,6 +421,7 @@ class Cli():
         
 
     def trakt_tv(self):
+        """Trak, tv menu"""
         option = inquirer.select(message="Options: ", choices=[
             "Search",
             "Movies",
@@ -411,6 +440,7 @@ class Cli():
 
 
     def trakt_user(self):
+        """Shows trakt.tv user options"""
         user_options = inquirer.fuzzy(message="Options: ", choices=[
             Choice("history", "History"),
             Choice("watched", "Watched")]).execute()
@@ -420,24 +450,26 @@ class Cli():
                 arg = inquirer.fuzzy(message="Type: ", choices=[
                     "movies",
                     "shows"]).execute()
-                print(self.Trakt.user(user_options, self.db.read_trakt_user_data()[0][4], arg))
-        print(self.Trakt.user(user_options, self.db.read_trakt_user_data()[0][4]))
+                print(self.trakt.user(user_options, self.db.read_trakt_user_data()[0][4], arg))
+        print(self.trakt.user(user_options, self.db.read_trakt_user_data()[0][4]))
 
 
     def trakt_auth(self):
+        """Trakt.tv authentication"""
         current_user = self.db.get_current_user()
         if str(current_user) not in str(self.db.read_device_auth()[0][0]):
-            auth_code = self.Trakt.authorize_device()
+            auth_code = self.trakt.authorize_device()
             print(f"Please go to the following URL and enter the code: [bold]{auth_code[0]}[/]\n{auth_code[1]}")
             input("Press enter to continue, after you authorize...")
-            self.Trakt.get_device_token(auth_code[2])
-            self.Trakt.get_settings()
+            self.trakt.get_device_token(auth_code[2])
+            self.trakt.get_settings()
         else:
             print(f"Already authorized as {self.db.read_trakt_user_data()[0][0]}")
             self.trakt_tv()
 
 
     def trakt_search(self):
+        """Searches for a movie or tv show on trakt.tv"""
         search = inquirer.text(message="Search: ").execute()
         search_type = inquirer.fuzzy(message="Type: ", choices=[
             Choice("", "none"),
@@ -447,16 +479,18 @@ class Cli():
             "person",
             "list"]).execute()
 
-        print(self.Trakt.search(search, search_type))
+        print(self.trakt.search(search, search_type))
 
 
     def more_results(self):
+        """Shows more results"""
         self.page += 25
         self.query_dict['offset'] = self.page
-        self.resutl_list = self.bc.search(self.query_dict)
+        self.result_list = self.bc.search(self.query_dict)
         self.list_movies(self.query_dict["what"], self.query_dict["sort"])
 
     def help(self):
+        """Shows available commands and their description when browsing results"""
         print("Select movie by typing the # (number) of the movie. \
         \n'[b]more[/]' for more results. \
         \n'[b]search \[query][/]' for extensive search. \
