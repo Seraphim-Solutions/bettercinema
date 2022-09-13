@@ -173,11 +173,11 @@ class Cli():
         if search_type == "Default Search":
             self.clear_console()
         # seach for movies with self.bc and print movies
-            query = inquirer.text(message="Search for movie: ").execute()
+            query = inquirer.text(message="Search for: ").execute()
             
             self.query_dict = {"what": query, "offset": 0, "limit": 25, "category": "video", "sort": ""}
             self.search_query(self.query_dict)
-            self.list_movies(query, sort="")
+            self.list_results(query, sort="")
         
         if search_type == "Advanced Search":
             self.clear_console()
@@ -232,7 +232,7 @@ class Cli():
         self.query_dict = {"what": query, "offset": offset, "limit": int(limit), "category": category, "sort": sort}
 
         self.search_query(self.query_dict)
-        self.list_movies(query, sort)
+        self.list_results(query, sort)
 
     def get_result_data(self):
         """Parses data from the result list"""
@@ -244,7 +244,7 @@ class Cli():
             self.movie_negative_votes.append(movie[4])
         return
 
-    def list_movies(self, query, sort):
+    def list_results(self, query, sort):
         """Generates table with results"""
         self.get_result_data()
         
@@ -253,6 +253,7 @@ class Cli():
         self.movie_table.add_column("Name", style=self.color_good, justify="middle")
         self.movie_table.add_column("Size", style=self.color_warning, justify="middle")
         self.movie_table.add_column("Votes", justify="middle", no_wrap=True)
+        
         for i in range(len(self.movie_names)):
             self.movie_table.add_row(f"[{self.color_primary}]{str(i + 1)}[/]",
             self.movie_names[i],
@@ -293,14 +294,14 @@ class Cli():
             self.clear_table_data()
             self.query_dict["sort"] = selected_movie.split(" ")[1]
             self.search_query(self.query_dict)
-            self.list_movies(self.query_dict["what"], self.query_dict["sort"])
+            self.list_results(self.query_dict["what"], self.query_dict["sort"])
 
         if "search " in selected_movie:
             self.clear_console()
             self.clear_table_data()
             self.query_dict["what"] = selected_movie.replace("search ", "")
             self.search_query(self.query_dict)
-            self.list_movies(self.query_dict["what"], self.query_dict["sort"])
+            self.list_results(self.query_dict["what"], self.query_dict["sort"])
 
         if selected_movie == "menu":
             self.clear_console()
@@ -370,7 +371,7 @@ class Cli():
         query = f"{name}.S{int(self.season_selection):02d}E{int(episode):02d}"
         self.query_dict = {"what": query, "offset": 0, "limit": 25, "category": "video", "sort": ""}
         self.search_query(self.query_dict)
-        self.list_movies(self.query_dict["what"], self.query_dict["sort"])
+        self.list_results(self.query_dict["what"], self.query_dict["sort"])
 
     
     def trakt_season_list(self, seasons, slug):
@@ -487,7 +488,7 @@ class Cli():
         self.page += 25
         self.query_dict['offset'] = self.page
         self.result_list = self.bc.search(self.query_dict)
-        self.list_movies(self.query_dict["what"], self.query_dict["sort"])
+        self.list_results(self.query_dict["what"], self.query_dict["sort"])
 
     def help(self):
         """Shows available commands and their description when browsing results"""
