@@ -52,9 +52,14 @@ After you login, username and your salted password hash will be stored in ‘dat
 
 ![Login preview](https://i.imgur.com/mdUsdnd.png)
 
-After you logged in, you will see two search options:
+After you logged in, you will see few options:
+- Default Search 
+- Advanced Search
+- Open Link
+- Trakt.tv
+- Settings
 
-![Search preview](https://i.imgur.com/Hw6t8cX.png)
+![Search preview](https://i.imgur.com/YhCveaD.png)
 
 Default Search is pre-configured with some parameters, except search query of course.
 
@@ -64,7 +69,7 @@ These parameters are:
 
 - category = video
 
-- sort = largest
+- sort = relevance (Webshare uses empty string for Relevace)
 
 *NOTE You will expand the search with the `more` command after your search*
 
