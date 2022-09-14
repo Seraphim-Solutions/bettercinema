@@ -4,7 +4,7 @@ import re
 
 class version_handler:
     def __init__(self):
-        self.version = "v1.1.1"
+        self.version = "v1.1.2"
         url = "https://api.github.com/repos/Seraphim-Solutions/bettercinema/releases/latest"
         self.response = requests.get(url).json()
         pass
