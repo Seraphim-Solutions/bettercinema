@@ -166,8 +166,7 @@ class Cli():
         search_type = inquirer.select(message="Options: ", choices=[
             "Default Search",
             "Advanced Search",
-            "Open Link",
-            Choice("Trakt.tv", "Trakt.tv [Beta]"),
+            "Open Link", # Choice("Trakt.tv", "Trakt.tv [Beta]"), # removed untill done
             "Settings"],
             default="Default Search").execute()
         
