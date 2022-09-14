@@ -25,6 +25,5 @@ class version_handler:
         for assets in self.response['assets']:
             if re.match(f"BetterCinema_{platform.system()}*", assets['name']):
                 return f"Direct link: {assets['browser_download_url']}"
-            else:
-                return f"Sorry, but binary file for {platform.system()} has not been released yet.\nFor more information check latest release: https://github.com/Seraphim-Solutions/bettercinema/releases/tag/v1.1.1"
+        return f"Sorry, but binary file for {platform.system()} has not been released yet.\nFor more information check latest release: https://github.com/Seraphim-Solutions/bettercinema/releases/tag/v1.1.1"
 
