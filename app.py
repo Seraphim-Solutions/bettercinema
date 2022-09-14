@@ -10,6 +10,7 @@ from rich.traceback import install
 from rich.table import Table
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
+import platform
 
 from misc.md5Crypt import md5Crypt
 from api.api import BetterCinemaAPI
@@ -320,11 +321,10 @@ class Cli():
         
     def selected_item_options(self, movie_link):
         """Shows options for the selected item"""
-        item_options = inquirer.select(message="Select item options: ", choices=[
-            "Download",
-            "Get Link",
-            "Play in VLC [Network Stream]",
-            "Play in Infuse [Apple only]"]).execute()
+        choice_list = ["Download", "Get Link", "Play in VLC [Network Stream]"]
+        choice_list.append("Play in Infuse") if platform.system() == "Darwin" else None
+
+        item_options = inquirer.select(message="Select item options: ", choices=choice_list).execute()
         
         if item_options == "Download":
             filename = inquirer.text(message="Filename: ").execute()
@@ -335,7 +335,7 @@ class Cli():
             self.player.play(movie_link)
             self.select_item_from_results()
 
-        if item_options == "Play in Infuse [Apple only]":
+        if item_options == "Play in Infuse":
             self.player_infuse.play(movie_link)
             self.select_item_from_results()
 
