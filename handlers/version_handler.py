@@ -1,19 +1,23 @@
-import requests
+"""Import modules"""
 import platform
 import re
+import requests
 
-class version_handler:
+
+class VersionHandler:
+    """Handle BetterCinema Version and updates"""
     def __init__(self):
-        self.version = "v1.1.2"
+        self.version = "v1.2.0"
         url = "https://api.github.com/repos/Seraphim-Solutions/bettercinema/releases/latest"
-        self.response = requests.get(url).json()
-        pass
+        self.response = requests.get(url, timeout=10).json()
 
     def get_version(self):
+        """Get BetterCinema latest version"""
         latest_tag = self.response['tag_name']
         return latest_tag
 
     def check_version(self):
+        """Check BetterCinema version"""
         latest_tag = self.response['tag_name']
         if latest_tag == self.version:
             return "You are running the latest version."
@@ -22,6 +26,7 @@ class version_handler:
             return self.get_latest_version()
 
     def get_latest_version(self):
+        """Get BetterCinema latest version"""
         for assets in self.response['assets']:
             if re.match(f"BetterCinema_{platform.system()}*", assets['name']):
                 return f"Direct link: {assets['browser_download_url']}"

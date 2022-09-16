@@ -4,13 +4,14 @@ import hashlib
 import json
 import sys
 import xml.etree.ElementTree as ET
+import platform
 from rich import print, pretty
 from rich.console import Console
 from rich.traceback import install
 from rich.table import Table
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
-import platform
+
 
 from misc.md5Crypt import md5Crypt
 from api.api import BetterCinemaAPI
@@ -21,7 +22,7 @@ from handlers.db_handler import db
 from handlers.config_handler import ConfigHandler
 from handlers.trakt_handler import Trakt
 # from handlers.trakt.oauth import oauth
-from handlers.version_handler import version_handler
+from handlers.version_handler import VersionHandler
 from handlers.connection_handler import ConnectionHandler
 
 
@@ -41,7 +42,7 @@ class Cli():
         self.db = db()
         self.md5crypt = md5Crypt()
         self.trakt = Trakt()
-        self.version = version_handler()
+        self.version = VersionHandler()
         self.clear_table_data()
         self.movie_links = []
         self.page = 0
