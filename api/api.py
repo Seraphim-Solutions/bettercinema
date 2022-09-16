@@ -45,7 +45,7 @@ class BetterCinemaAPI():
 
         data.extend(temp_dict)
         _list = []
-        for xvar in range(enumerate(data)):
+        for xvar in range(len(data)):
             ident = data[xvar]["ident"]
             name = data[xvar]["name"]
             postive_votes = data[xvar]["positive_votes"]
