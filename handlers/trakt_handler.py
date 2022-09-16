@@ -45,9 +45,9 @@ class Trakt:
         return self.Shows.seasons(arg, season)
 
     # user
-    def user(self, type, slug, arg=None):
+    def user(self, type, slug, arg=None, limit=""):
         """Get user data"""
-        return self.User.get(type, slug, arg)
+        return self.User.get(type, slug, arg, limit)
 
     # search
     def search(self, query, type=""):
