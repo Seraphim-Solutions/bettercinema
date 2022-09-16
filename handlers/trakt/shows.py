@@ -9,6 +9,7 @@ class Shows:
     
     
     def get(self, arg, limit):
+        """Get shows from Trakt.tv"""
         headers = {
         'Content-Type': 'application/json',
         'trakt-api-version': '2',
@@ -23,6 +24,7 @@ class Shows:
     
     
     def seasons(self, arg, season):
+        """Get a list of seasons for a show or episodes in a season."""
         headers = {
         'Content-Type': 'application/json',
         'trakt-api-version': '2',

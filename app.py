@@ -22,12 +22,18 @@ from handlers.config_handler import ConfigHandler
 from handlers.trakt_handler import Trakt
 # from handlers.trakt.oauth import oauth
 from handlers.version_handler import version_handler
+from handlers.connection_handler import ConnectionHandler
 
 
 class Cli():
     """handles the cli"""
     def __init__(self):
         ConfigHandler()
+        with open('config/config.json', 'r', encoding="utf-8") as f:
+            self.config = json.load(f)
+        self.load_colors()
+        self.conn = ConnectionHandler()
+        self.test_connection()
         self.bc = BetterCinemaAPI()
         self.rp = Handler()
         self.player = Player()
@@ -46,10 +52,16 @@ class Cli():
         if users != []:
             for username, pwhash in users:
                 self.user_dict.update({username: pwhash})
-        
-        with open('config/config.json', 'r', encoding="utf-8") as f:
-            self.config = json.load(f)
-        self.load_colors()
+
+
+    def test_connection(self):
+        """Tests the connection"""
+        if self.conn.internet() == "BAD":
+            print(f"[{self.color_bad}] <ERROR> No internet connection[/]")
+            sys.exit()
+        if self.conn.webshare() == "BAD":
+            print(f"[{self.color_bad}] <ERROR> Can't connect to webshare[/]")
+            sys.exit()
 
 
     def clear_console(self):
@@ -166,7 +178,8 @@ class Cli():
         search_type = inquirer.select(message="Options: ", choices=[
             "Default Search",
             "Advanced Search",
-            "Open Link", # Choice("Trakt.tv", "Trakt.tv [Beta]"), # removed untill done
+            "Open Link",
+            Choice("Trakt.tv", "Trakt.tv [Beta]"), # removed untill done
             "Settings"],
             default="Default Search").execute()
         
@@ -190,10 +203,10 @@ class Cli():
             
         if search_type == "Trakt.tv":
             self.clear_console()
-            print("This functionality is not yet implemented.")
-            self.menu()
-            #self.trakt_auth() if self.has_trakt_auth == None else self.menu() # temp until trakt handler is implemented | move this to trakt_tv() after trakt handler is implemented
-            #self.trakt_tv()
+            #print("This functionality is not yet implemented.")
+            #self.menu()
+            self.trakt_auth() if self.has_trakt_auth == None else self.trakt_tv() # temp until trakt handler is implemented | move this to trakt_tv() after trakt handler is implemented
+            
             
         if search_type == "Settings":
             self.clear_console()
@@ -375,6 +388,7 @@ class Cli():
     
     def trakt_season_list(self, seasons, slug):
         """Shows seasons from trakt.tv depending on the selected show"""
+        print(seasons)
         season_list = [Choice(season, f"Season {season}") for season in range(seasons)]
         
         self.season_selection = inquirer.fuzzy(message="Select season: ", choices=season_list).execute()
@@ -457,12 +471,13 @@ class Cli():
     def trakt_auth(self):
         """Trakt.tv authentication"""
         current_user = self.db.get_current_user()
-        if str(current_user) not in str(self.db.read_device_auth()[0][0]):
+        if str(current_user) not in str(self.db.read_device_auth()):
             auth_code = self.trakt.authorize_device()
             print(f"Please go to the following URL and enter the code: [bold]{auth_code[0]}[/]\n{auth_code[1]}")
             input("Press enter to continue, after you authorize...")
             self.trakt.get_device_token(auth_code[2])
             self.trakt.get_settings()
+            self.trakt_tv()
         else:
             print(f"Already authorized as {self.db.read_trakt_user_data()[0][0]}")
             self.trakt_tv()
@@ -471,7 +486,7 @@ class Cli():
     def trakt_search(self):
         """Searches for a movie or tv show on trakt.tv"""
         search = inquirer.text(message="Search: ").execute()
-        search_type = inquirer.fuzzy(message="Type: ", choices=[
+        search_type = inquirer.fuzzy(message="Type [Filter]: ", choices=[
             Choice("", "none"),
             "movie",
             "show",
