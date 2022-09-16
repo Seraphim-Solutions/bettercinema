@@ -595,7 +595,7 @@ class Cli():
  
 
 if __name__ == '__main__':
-    os.system(f"title BetterCinema {version_handler().version}")
+    os.system(f"title BetterCinema {VersionHandler().version}")
     pretty.install()
     install()
     console = Console()
