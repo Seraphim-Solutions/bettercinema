@@ -379,7 +379,7 @@ class Cli():
         choices = [Choice(str(episode_number[i]), f"E:{episode_number[i]} {episode_name[i]}") for i in range(len(episode_name))]
 
         episode = inquirer.fuzzy(message="Select episode: ", choices=choices).execute()
-        name = self.selcted_slug.replace("-", ".")
+        name = self.selected_slug.replace("-", ".")
         query = f"{name}.S{int(self.season_selection):02d}E{int(episode):02d}"
         self.query_dict = {"what": query, "offset": 0, "limit": 25, "category": "video", "sort": ""}
         self.search_query(self.query_dict)
@@ -388,8 +388,7 @@ class Cli():
     
     def trakt_season_list(self, seasons, slug):
         """Shows seasons from trakt.tv depending on the selected show"""
-        print(seasons)
-        season_list = [Choice(season, f"Season {season}") for season in range(seasons)]
+        season_list = [Choice(season, f"Season {season}") for season in seasons]
         
         self.season_selection = inquirer.fuzzy(message="Select season: ", choices=season_list).execute()
         
@@ -404,8 +403,9 @@ class Cli():
                 *choices
                 ]).execute()
         seasons = self.trakt.seasons(selection)
-        self.selcted_slug = selection
-        self.trakt_season_list(len(seasons), selection)
+        seasons = [season['number'] for season in seasons]
+        self.selected_slug = selection
+        self.trakt_season_list(seasons, selection)
 
 
     def trakt_tv_shows(self):
@@ -418,18 +418,15 @@ class Cli():
             Choice("collected", "Collected"),
             Choice("anticipated", "Anticipated")]).execute()
 
-
+        query_list = []
         if "popular" == shows_options:
-            query_list = []
             show_list = ([[title['title'], title['ids']['slug'], title['year']] for title in self.trakt.shows(shows_options, "90000")])
-            [query_list.append(show[0]) for show in show_list]
-            self.slug = [show[1] for show in show_list]
 
         else:
-            query_list = []
             show_list = ([[title['show']['title'], title['show']['ids']['slug'], title['show']['year']] for title in self.trakt.shows(shows_options, "90000")])
-            [query_list.append(show[0]) for show in show_list]
-            self.slug = [show[1] for show in show_list]
+        
+        [query_list.append(show[0]) for show in show_list]
+        self.slug = [show[1] for show in show_list]
             
         self.search_trakt_seasons(query_list)
         
