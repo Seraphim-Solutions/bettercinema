@@ -46,7 +46,7 @@ class Cli():
         self.movie_links = []
         self.page = 0
         self.username = ""
-        self.user_dict, self.query_dict = {}, {}
+        self.user_dict, self.query_dict = {}, {"what": "", "offset": 0, "limit": 25, "category": "video", "sort": ""}
         users = self.db.read_creds()
         self.has_trakt_auth = None
         if users != []:
@@ -274,7 +274,7 @@ class Cli():
             (f"[{self.color_good}]{self.movie_postive_votes[i]}[/] [{self.color_neutral}]|[/] [{self.color_bad}]{self.movie_negative_votes[i]}[/]"),
             style=(self.color_neutral if self.movie_postive_votes[i] == self.movie_negative_votes[i] else ("" if self.movie_postive_votes[i] >= self.movie_negative_votes[i] else self.color_bad)))
 
-        console.print(self.movie_table)
+        print(self.movie_table)
         self.select_item_from_results()
 
 
@@ -283,10 +283,12 @@ class Cli():
         selected_movie = inquirer.text(message="~> ").execute()
         commands = ("help", "more", "search", "sort", "menu", "exit")
 
-        if selected_movie not in commands and selected_movie.isdigit() and int(selected_movie) <= len(self.movie_names):
+        if selected_movie not in commands and selected_movie.isdigit() and \
+         int(selected_movie) <= len(self.movie_names):
             selected_movie_index = int(selected_movie) - 1
 
-            movie_link = self.bc.get_link(ident=self.movie_idents[selected_movie_index], wst=self.wst)
+            movie_link = self.bc.get_link(ident=self.movie_idents[selected_movie_index],
+             wst=self.wst)
             if movie_link == "Error 403":
                 print("No link found, maybe the file is password protected.")
                 self.select_item_from_results()
@@ -295,11 +297,11 @@ class Cli():
 
         if selected_movie == "help":
             self.help()
-        
+
         if selected_movie == "more":
             self.clear_console()
             self.more_results()
-        
+
         if "sort " in selected_movie:
             self.page = 0
             self.query_dict['offset'] = self.page
@@ -313,6 +315,7 @@ class Cli():
             self.clear_console()
             self.clear_table_data()
             self.query_dict["what"] = selected_movie.replace("search ", "")
+            self.query_dict["offset"] = 0
             self.search_query(self.query_dict)
             self.list_results(self.query_dict["what"], self.query_dict["sort"])
 
@@ -327,7 +330,7 @@ class Cli():
 
         else:
             print("Invalid input.")
-            self.help()
+            print(self.help())
             self.select_item_from_results()
         
         
@@ -377,16 +380,21 @@ class Cli():
             Choice("watched", "Watched"),
             Choice("collected", "Collected"),
             Choice("anticipated", "Anticipated"),
-            Choice("boxoffice", "Box Office")]).execute()
+            Choice("boxoffice", "Box Office"),
+            "Search"]).execute()
 
 
         if movies_options:
             query_list = []
-            if "popular" == movies_options:
-                movie_list = ([[title['title'], title['ids']['slug'], title['year']] for title in self.trakt.movies(movies_options, "140000")])
+            if "Search" == movies_options:
+                search_query = inquirer.text(message="Search: ").execute()
+                movie_list = self.trakt_search_results(search_query, "movie")
+
+            elif "popular" == movies_options:
+                movie_list = ([[movie['title'], movie['ids']['slug'], movie['year']] for movie in self.trakt.movies(movies_options, "140000")])
 
             else:
-                movie_list = ([[title['movie']['title'], title['movie']['ids']['slug'], title['movie']['year']] for title in self.trakt.movies(movies_options, "100000")])
+                movie_list = ([[movie['movie']['title'], movie['movie']['ids']['slug'], movie['movie']['year']] for movie in self.trakt.movies(movies_options, "100000")])
             
             [query_list.append(movie[0]) for movie in movie_list]
             self.slug = [movie[1] for movie in movie_list]
@@ -440,25 +448,29 @@ class Cli():
             Choice("recommended", "Recommended"),
             Choice("watched", "Watched"),
             Choice("collected", "Collected"),
-            Choice("anticipated", "Anticipated")]).execute()
+            Choice("anticipated", "Anticipated"),
+            "Search"]).execute()
 
         query_list = []
-        if "popular" == shows_options:
-            show_list = ([[title['title'], title['ids']['slug'], title['year']] for title in self.trakt.shows(shows_options, "90000")])
+        if shows_options == "Search":
+            search_query = inquirer.text(message="Search: ").execute()
+            show_list = self.trakt_search_results(search_query, "show")
+
+        elif "popular" == shows_options:
+            show_list = ([[show['title'], show['ids']['slug'], show['year']] for show in self.trakt.shows(shows_options, "90000")])
 
         else:
-            show_list = ([[title['show']['title'], title['show']['ids']['slug'], title['show']['year']] for title in self.trakt.shows(shows_options, "90000")])
-        
+            show_list = ([[show['show']['title'], show['show']['ids']['slug'], show['show']['year']] for show in self.trakt.shows(shows_options, "90000")])
+
         [query_list.append(show[0]) for show in show_list]
         self.slug = [show[1] for show in show_list]
             
         self.search_trakt_seasons(query_list)
-        
+
 
     def trakt_tv(self):
         """Trak, tv menu"""
         option = inquirer.select(message="Options: ", choices=[
-            "Search",
             "Movies",
             "TV Shows",
             "User"],
@@ -470,23 +482,71 @@ class Cli():
             self.trakt_tv_shows()
         if option == "User":
             self.trakt_user()
-        if option == "Search":
-            self.trakt_search()
 
+
+    def trakt_list_history_cmd(self):
+        """Handle commands in trakt history"""
+        options = inquirer.text(message="~> ").execute()
+        
+        if "search " in options:
+            self.clear_console()
+            self.clear_table_data()
+            self.query_dict["what"] = options.replace("search ", "")
+            self.query_dict["offset"] = 0
+            self.search_query(self.query_dict)
+            self.list_results(self.query_dict["what"], self.query_dict["sort"])
+
+        if options == "menu":
+            self.clear_console()
+            self.menu()
+        
+        if options == "exit":
+            self.clear_console()
+            # close program
+            sys.exit()
+
+        else:
+            print("Invalid input.\nUsable commands: search, menu, exit")
+            self.trakt_list_history_cmd()
+
+
+    def trakt_list_history(self, history: list):
+        """Creates a rich table from history"""
+        table = Table(show_header=True, header_style="bold magenta", row_styles=["dim", ""])
+        table.add_column("Title", justify="center", no_wrap=True)
+        table.add_column("Type", justify="center", no_wrap=True)
+        table.add_column("Episode", justify="center", no_wrap=True)
+        table.add_column("Date", justify="center", no_wrap=True)
+
+        for item in reversed(history):
+            table.add_row(
+                f"{item[0]} ({item[1]})",
+                item[3],
+                "-" if item[4] == "Movie" else f"{item[4]}x{item[5]}",
+                item[2]
+            )
+        print(table)
+        self.trakt_list_history_cmd()
+
+
+    def trakt_user_history(self):
+        """Handle user history"""
+        history = self.trakt.user("history", self.db.read_trakt_user_data()[0][4], limit=50000)
+        history_list = []
+        _ = [history_list.append([item['movie']['title'], item['movie']['year'], item['watched_at'],
+        item['type'], "Movie"]) if item['type'] == "movie" else history_list.append(
+            [item['show']['title'], 
+            item['show']['year'], item['watched_at'], item['type'], item['episode']['season'], 
+            item['episode']['number']]) for item in history]
+        self.trakt_list_history(history_list)
 
     def trakt_user(self):
         """Shows trakt.tv user options"""
         user_options = inquirer.fuzzy(message="Options: ", choices=[
-            Choice("history", "History"),
-            Choice("watched", "Watched")]).execute()
+            Choice("history", "History")]).execute()
 
         if user_options:
-            if user_options == "watched":
-                arg = inquirer.fuzzy(message="Type: ", choices=[
-                    "movies",
-                    "shows"]).execute()
-                print(self.trakt.user(user_options, self.db.read_trakt_user_data()[0][4], arg))
-        print(self.trakt.user(user_options, self.db.read_trakt_user_data()[0][4]))
+            self.trakt_user_history()
 
 
     def trakt_auth(self):
@@ -494,7 +554,9 @@ class Cli():
         current_user = self.db.get_current_user()
         if str(current_user) not in str(self.db.read_device_auth()):
             auth_code = self.trakt.authorize_device()
-            print(f"Please go to the following URL and enter the code: [bold]{auth_code[0]}[/]\n{auth_code[1]}")
+            print(f"Please go to the following URL and enter the code: \
+            [bold]{auth_code[0]}[/]\n{auth_code[1]}")
+
             input("Press enter to continue, after you authorize...")
             self.trakt.get_device_token(auth_code[2])
             self.trakt.get_settings()
@@ -504,18 +566,12 @@ class Cli():
             self.trakt_tv()
 
 
-    def trakt_search(self):
-        """Searches for a movie or tv show on trakt.tv"""
-        search = inquirer.text(message="Search: ").execute()
-        search_type = inquirer.fuzzy(message="Type [Filter]: ", choices=[
-            Choice("", "none"),
-            "movie",
-            "show",
-            "episode",
-            "person",
-            "list"]).execute()
-
-        print(self.trakt.search(search, search_type))
+    def trakt_search_results(self, search, search_type):
+        """Parse results from trakt search"""
+        results = self.trakt.search(search, search_type)
+        results_list = [[result[search_type]['title'],
+        result[search_type]['ids']['slug'], result[search_type]['year']] for result in results]
+        return results_list
 
 
     def more_results(self):
@@ -527,14 +583,16 @@ class Cli():
 
     def help(self):
         """Shows available commands and their description when browsing results"""
-        print("Select movie by typing the # (number) of the movie. \
+        help_message = "Select movie by typing the # (number) of the movie. \
         \n'[b]more[/]' for more results. \
         \n'[b]search \[query][/]' for extensive search. \
         \n'[b]sort \[type][/]' for sorting type. (largest, smallest, rating, recent, blank [i][b]= 'sort '[/] for relevance \
         \n'[b]menu[/]' for main menu. \
-        \n'[b]exit[/]' to exit.")
-        self.select_item_from_results()
+        \n'[b]exit[/]' to exit."
+
+        return help_message
  
+
 if __name__ == '__main__':
     os.system(f"title BetterCinema {version_handler().version}")
     pretty.install()
