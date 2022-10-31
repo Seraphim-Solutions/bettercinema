@@ -46,7 +46,7 @@ All libraries will be in requirements.txt for now
 
 Using ‘BetterCinema’ (or just BC in short) is quite simple.
 
-The first time you open BC you’ll be asked for your webshare credentials.
+The first time you open BC you’ll be asked for your [webshare](https://webshare.cz) credentials.
 
 After you login, username and your salted password hash will be stored in ‘data.db’, so you don’t have to log in every time you open BC.
 
