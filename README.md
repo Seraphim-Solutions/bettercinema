@@ -1,3 +1,6 @@
+# We are looking for a logo and icon. If you are interested please contact us at Discord (Danni#2185) or email danny@seraphim-solutions.com
+
+
 # BetterCinema
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/Seraphim-Solutions/bettercinema?style=for-the-badge)](https://github.com/Seraphim-Solutions/bettercinema/releases)
 [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Seraphim-Solutions/bettercinema?style=for-the-badge)](https://github.com/Seraphim-Solutions/bettercinema) 
