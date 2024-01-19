@@ -1,4 +1,4 @@
-# We are looking for a logo and icon. If you are interested please contact us at Discord (Danni#2185) or email danny@seraphim-solutions.com
+# We are looking for a logo and icon. If you are interested please contact us at Discord (Danni65) or email danny@seraphim-solutions.com
 
 
 # BetterCinema
