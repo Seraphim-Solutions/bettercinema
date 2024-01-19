@@ -214,7 +214,7 @@ class Cli():
             setting = inquirer.select(message="Settings: ", choices=[
                 "Color Theme",
                 "Check for updates",
-                "Backals"]).execute()
+                "Back"]).execute()
             if setting == "Color Theme":
                 self.color_theme()
             if setting == "Check for updates":
