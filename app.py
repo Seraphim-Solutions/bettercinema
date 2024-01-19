@@ -213,12 +213,15 @@ class Cli():
             self.clear_console()
             setting = inquirer.select(message="Settings: ", choices=[
                 "Color Theme",
-                "Check for updates"]).execute()
+                "Check for updates",
+                "Backals"]).execute()
             if setting == "Color Theme":
                 self.color_theme()
             if setting == "Check for updates":
                 print(f"[{self.color_neutral}]{self.version.check_version()}[/]")
                 input("\nPress enter to go back to the menu...")
+                self.menu()
+            if setting == "Back":
                 self.menu()
 
 
@@ -288,13 +291,15 @@ class Cli():
          int(selected_movie) <= len(self.movie_names):
             selected_movie_index = int(selected_movie) - 1
 
+            movie_name = self.movie_names[selected_movie_index]
+
             movie_link = self.bc.get_link(ident=self.movie_idents[selected_movie_index],
              wst=self.wst)
             if movie_link == "Error 403":
                 print("No link found, maybe the file is password protected.")
                 self.select_item_from_results()
             else:
-                self.selected_item_options(movie_link)
+                self.selected_item_options(movie_link, movie_name)
 
         if selected_movie == "help":
             self.help()
@@ -326,8 +331,10 @@ class Cli():
         
         if selected_movie == "exit":
             self.clear_console()
+            # go back to main menu
+            self.menu()
             # close program
-            sys.exit()
+            #sys.exit()
 
         else:
             print("Invalid input.")
@@ -335,7 +342,7 @@ class Cli():
             self.select_item_from_results()
         
         
-    def selected_item_options(self, movie_link):
+    def selected_item_options(self, movie_link, movie_name):
         """Shows options for the selected item"""
         choice_list = ["Download", "Get Link", "Play in VLC [Network Stream]"]
         choice_list.append("Play in Infuse") if platform.system() == "Darwin" else None
@@ -343,7 +350,7 @@ class Cli():
         item_options = inquirer.select(message="Select item options: ", choices=choice_list).execute()
         
         if item_options == "Download":
-            filename = inquirer.text(message="Filename: ").execute()
+            filename = inquirer.text(message="Filename: ", default=movie_name).execute()
             self.rp.download(filename, movie_link)
             self.select_item_from_results()
 
