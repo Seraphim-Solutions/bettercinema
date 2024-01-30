@@ -98,4 +98,5 @@ This part is quite self-explanatory, to select a specific movie just type the in
 
 For more options when browsing the result table, type `help`. 
 
-## Have any suggestions? Use [Discussion](https://github.com/Seraphim-Solutions/bettercinema/discussions/categories/ideas).
+## Have any questions? Use [Discussion](https://github.com/Seraphim-Solutions/bettercinema/discussions/new?category=q-a).
+## Do you have any idea for a feature? Use [This template](https://github.com/Seraphim-Solutions/bettercinema/issues/new?assignees=&labels=&projects=&template=feature_request.md&title=)
