@@ -13,5 +13,17 @@ jobs:
       with:
         spec: 'app.py'
         requirements: 'requirements.txt'
-        upload_exe_with_name: 'BetterCinema_Darwin'
         options: --onefile
+    - name: Rename Application
+      run: mv dist/app dist/BetterCinema_Darwin
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: BetterCinema-Linux
+        path: dist/BetterCinema_Darwin # or path/to/artifact
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: dist/BetterCinema_Darwin
