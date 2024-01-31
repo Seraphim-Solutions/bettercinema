@@ -10,6 +10,10 @@ jobs:
     runs-on: macos-latest
 
     steps:
+    - uses: actions/checkout@v2
+    - name: Copy build files
+      run: rsync -av --exclude='builds' * builds/mac  
+    
     - name: Create Executable
       uses: sayyid5416/pyinstaller@v1
       with:
