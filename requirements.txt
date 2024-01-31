@@ -2,3 +2,4 @@ InquirerPy
 requests
 rich
 xmltodict
+tqdm
