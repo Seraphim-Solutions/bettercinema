@@ -45,6 +45,11 @@ CREATE TABLE IF NOT EXISTS `titulkycom` (
         self.cur.execute("INSERT INTO webshare (username, hash) VALUES (?, ?)", (username, hash))
         self.con.commit()
     
+    
+    def remove_creds(self, username):
+        self.cur.execute("DELETE FROM webshare WHERE username = ?", (username, ))
+        self.con.commit()
+
 
     def add_device_auth(self, access_token, refresh_token, expires_in, created_at):
         self.cur.execute("SELECT id FROM trakt where id = ?", (self.get_current_user(), ))
