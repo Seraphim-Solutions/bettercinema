@@ -46,6 +46,7 @@ class Cli():
         self.trakt = Trakt()
         self.version = VersionHandler()
         self.clear_table_data()
+        self.user_logged_in = False
         self.movie_links = []
         self.page = 0
         self.username = ""
@@ -125,27 +126,30 @@ class Cli():
         """Gets the password hash"""
         return hashlib.sha1(self.md5crypt.md5crypt(pw=password, salt=salt).encode('utf-8')).hexdigest()
     
+
     def stored_account(self):
         """Gets the stored account from the database"""
-        use_sotred_account = inquirer.confirm(message="Use stored account?: ", default=True).execute()
-        if use_sotred_account:
-            user_choice = inquirer.select(message="Choose account: ", choices=[
-                *self.user_dict
+        user_choice = inquirer.select(message="Choose account: ", choices=[
+                *self.user_dict,
+                "Add new account",
             ]).execute()
 
-            username = user_choice
-            password = self.user_dict[username]
-            self.get_wst(username, password)
-            return username, password
-
-        if use_sotred_account == False:
+        if user_choice == "Add new account":
             username = inquirer.text(message="Username: ").execute()
             salt = self.get_salt(username)
             password = inquirer.secret(message="Password: ").execute()
             self.get_wst(username, self.get_password_hash(password, salt))
             return username, password
+        
+        else:
+            username = user_choice
+            password = self.user_dict[username]
+            self.get_wst(username, password)
+            return username, password
+
 
     def accounts(self):
+        self.update_user_dict()
         user_choice = inquirer.select(message="Choose account: ", choices=[
             *self.user_dict,
             "Add new account",
@@ -168,7 +172,16 @@ class Cli():
             ]).execute()
             self.db.remove_creds(user_choice)
             del self.user_dict[user_choice]
-            self.accounts()
+            if self.user_dict == {}:
+                self.clear_console()
+                print("No accounts stored. Please log in.")
+                self.login()
+            elif len(self.user_dict) == 1:
+                self.get_wst(list(self.user_dict.keys())[0], list(self.user_dict.values())[0])
+                self.username = list(self.user_dict.keys())[0]
+                self.menu()
+            else:
+                self.accounts()
         
         if user_choice == "Back":
             self.menu()
@@ -185,9 +198,16 @@ class Cli():
             password = inquirer.secret(message="Password: ").execute()
             salt = self.get_salt(username)
             self.get_wst(username, self.get_password_hash(password, salt))
-            
+
+        if len(self.user_dict) > 1:
+            username, password = self.stored_account()
+            self.username = username
+            self.clear_console()
+            self.menu()
+
         else:
             username, password = list(self.user_dict.keys())[0], list(self.user_dict.values())[0]
+            self.get_wst(username, password)
             print(username, password)
             sleep(2)
 
@@ -200,7 +220,15 @@ class Cli():
         self.clear_console()
         self.menu()
 
-    
+
+    def logout(self):
+        """Logs the user out of Webshare"""
+        self.db.remove_creds(self.username)
+        self.user_logged_in = False
+        self.clear_console()
+        self.login()
+
+
     def search_query(self, query: dict):
         """Searches for soemthing via webshare"""
         self.result_list = self.bc.search(query)
