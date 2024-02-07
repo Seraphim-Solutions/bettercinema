@@ -242,7 +242,8 @@ class Cli():
         """Shows the main menu"""
         self.clear_table_data()
         self.clear_console()
-        print(f"[{self.color_warning}]New version available: {self.version.get_version()}[/]") if self.version.version != self.version.get_version() else None
+        new_version = True if self.version.version != self.version.get_version() else False 
+        print(f"[{self.color_warning}]New version available: {self.version.get_version()}[/]") if new_version else None
         print(f"[{'blink ' + self.color_banner if self.config['banner']['animation'] == 1 else self.color_banner}]{self.config['banner']['text']}[/]\n          🎬 [i]DanniSec's & Trivarialthea's Project[/] 🎬\n")
         search_type = inquirer.select(message="Options: ", choices=[
             "Default Search",
@@ -251,6 +252,7 @@ class Cli():
             Choice("Trakt.tv", "Trakt.tv [Beta]"), # removed untill done
             "Settings",
             "Accounts",
+            Choice("Update", "Update BetterCinema") if new_version else None,
             "Exit"],
             default="Default Search").execute()
         
@@ -278,7 +280,6 @@ class Cli():
             #self.menu()
             self.trakt_auth() if self.has_trakt_auth == None else self.trakt_tv() # temp until trakt handler is implemented | move this to trakt_tv() after trakt handler is implemented
             
-            
         if search_type == "Settings":
             self.clear_console()
             setting = inquirer.select(message="Settings: ", choices=[
@@ -297,6 +298,10 @@ class Cli():
         if search_type == "Accounts":
             self.clear_console()
             self.accounts()
+        
+        if search_type == "Update":
+            print(self.version.download_latest_version())
+            sys.exit()
         
         if search_type == "Exit":
             sys.exit()

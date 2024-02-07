@@ -32,3 +32,23 @@ class VersionHandler:
                 return f"Direct link: {assets['browser_download_url']}"
         return f"Sorry, but binary file for {platform.system()} has not been released yet.\nFor more information check latest release: https://github.com/Seraphim-Solutions/bettercinema/releases/tag/{self.get_version()}"
 
+
+    def download_latest_version(self):
+        """Download BetterCinema latest version"""
+        os_name = platform.system()
+        if os_name == "Windows":
+            extension = "exe"
+        elif os_name == "Linux":
+            extension = "AppImage"
+        elif os_name == "Darwin":
+            extension = "dmg"
+
+        for assets in self.response['assets']:
+            if re.match(f"BetterCinema_{os_name}*", assets['name']):
+                url = assets['browser_download_url']
+                response = requests.get(url, stream=True)
+                with open(f"BetterCinema_{os_name}.{extension}", "wb") as file:
+                    for data in response.iter_content(chunk_size=1024):
+                        file.write(data)
+                return f"Downloaded: BetterCinema_{os_name}.{extension}"
+        return f"Sorry, but binary file for {os_name} has not been released yet.\nFor more information check latest release: https://github.com/Seraphim-Solutions/bettercinema/releases/tag/{self.get_version()}"
