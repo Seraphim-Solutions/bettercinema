@@ -5,6 +5,7 @@ import json
 import sys
 import xml.etree.ElementTree as ET
 import platform
+import re
 from rich import print, pretty
 from rich.console import Console
 from rich.traceback import install
@@ -44,17 +45,20 @@ class Cli():
         self.trakt = Trakt()
         self.version = VersionHandler()
         self.clear_table_data()
+        self.user_logged_in = False
         self.movie_links = []
         self.page = 0
         self.username = ""
         self.user_dict, self.query_dict = {}, {"what": "", "offset": 0, "limit": 25, "category": "video", "sort": ""}
-        users = self.db.read_creds()
         self.has_trakt_auth = None
+        self.update_user_dict()
+            
+    def update_user_dict(self):
+        users = self.db.read_creds()
         if users != []:
             for username, pwhash in users:
-                self.user_dict.update({username: pwhash})
-
-
+                    self.user_dict.update({username: pwhash})
+    
     def test_connection(self):
         """Tests the connection"""
         if self.conn.internet() == "BAD":
@@ -121,25 +125,70 @@ class Cli():
         """Gets the password hash"""
         return hashlib.sha1(self.md5crypt.md5crypt(pw=password, salt=salt).encode('utf-8')).hexdigest()
     
+
     def stored_account(self):
         """Gets the stored account from the database"""
-        use_sotred_account = inquirer.confirm(message="Use stored account?: ", default=True).execute()
-        if use_sotred_account:
-            user_choice = inquirer.select(message="Choose account: ", choices=[
-                *self.user_dict
+        user_choice = inquirer.select(message="Choose account: ", choices=[
+                *self.user_dict,
+                "Add new account",
             ]).execute()
 
-            username = user_choice
-            password = self.user_dict[username]
-            self.get_wst(username, password)
-            return username, password
-
-        if use_sotred_account == False:
+        if user_choice == "Add new account":
             username = inquirer.text(message="Username: ").execute()
             salt = self.get_salt(username)
             password = inquirer.secret(message="Password: ").execute()
             self.get_wst(username, self.get_password_hash(password, salt))
             return username, password
+        
+        else:
+            username = user_choice
+            password = self.user_dict[username]
+            self.get_wst(username, password)
+            return username, password
+
+
+    def accounts(self):
+        self.update_user_dict()
+        user_choice = inquirer.select(message="Choose account: ", choices=[
+            *self.user_dict,
+            "Add new account",
+            "Remove account",
+            "Back"
+        ]).execute()
+
+        if user_choice == "Add new account":
+            username = inquirer.text(message="Username: ").execute()
+            password = inquirer.secret(message="Password: ").execute()
+            salt = self.get_salt(username)
+            self.get_wst(username, self.get_password_hash(password, salt))
+            self.db.add_creds(username, self.get_password_hash(password, salt))
+            self.update_user_dict()
+            self.accounts()
+
+        if user_choice == "Remove account":
+            user_choice = inquirer.select(message="Choose account: ", choices=[
+                *self.user_dict
+            ]).execute()
+            self.db.remove_creds(user_choice)
+            del self.user_dict[user_choice]
+            if self.user_dict == {}:
+                self.clear_console()
+                print("No accounts stored. Please log in.")
+                self.login()
+            elif len(self.user_dict) == 1:
+                self.get_wst(list(self.user_dict.keys())[0], list(self.user_dict.values())[0])
+                self.username = list(self.user_dict.keys())[0]
+                self.menu()
+            else:
+                self.accounts()
+        
+        if user_choice == "Back":
+            self.menu()
+
+        else:
+            self.get_wst(user_choice, self.user_dict[user_choice])
+            self.username = user_choice
+            self.menu()
 
     def login(self):
         """Logs the user into Webshare"""
@@ -148,10 +197,18 @@ class Cli():
             password = inquirer.secret(message="Password: ").execute()
             salt = self.get_salt(username)
             self.get_wst(username, self.get_password_hash(password, salt))
-            
-        else:
+
+        if len(self.user_dict) > 1:
             username, password = self.stored_account()
-        
+            self.username = username
+            self.clear_console()
+            self.menu()
+
+        else:
+            username, password = list(self.user_dict.keys())[0], list(self.user_dict.values())[0]
+            self.get_wst(username, password)
+
+
         if username not in self.user_dict.keys():
             salt = self.get_salt(username)
             self.db.add_creds(username, self.get_password_hash(password, salt))
@@ -161,12 +218,21 @@ class Cli():
         self.clear_console()
         self.menu()
 
-    
+
+    def logout(self):
+        """Logs the user out of Webshare"""
+        self.db.remove_creds(self.username)
+        self.user_logged_in = False
+        self.clear_console()
+        self.login()
+
+
     def search_query(self, query: dict):
         """Searches for soemthing via webshare"""
         self.result_list = self.bc.search(query)
         if self.result_list is None:
             print(f"[{self.color_info}] > No results found[/]\n")
+            sleep(2)
             self.menu()
 
 
@@ -174,14 +240,18 @@ class Cli():
         """Shows the main menu"""
         self.clear_table_data()
         self.clear_console()
-        print(f"[{self.color_warning}]New version available: {self.version.get_version()}[/]") if self.version.version != self.version.get_version() else None
+        new_version = True if self.version.version != self.version.get_version() else False 
+        print(f"[{self.color_warning}]New version available: {self.version.get_version()}[/]") if new_version else None
         print(f"[{'blink ' + self.color_banner if self.config['banner']['animation'] == 1 else self.color_banner}]{self.config['banner']['text']}[/]\n          🎬 [i]DanniSec's & Trivarialthea's Project[/] 🎬\n")
         search_type = inquirer.select(message="Options: ", choices=[
             "Default Search",
             "Advanced Search",
             "Open Link",
             Choice("Trakt.tv", "Trakt.tv [Beta]"), # removed untill done
-            "Settings"],
+            "Settings",
+            "Accounts",
+            Choice("Update", "Update BetterCinema") if new_version else None,
+            "Exit"],
             default="Default Search").execute()
         
         if search_type == "Default Search":
@@ -208,7 +278,6 @@ class Cli():
             #self.menu()
             self.trakt_auth() if self.has_trakt_auth == None else self.trakt_tv() # temp until trakt handler is implemented | move this to trakt_tv() after trakt handler is implemented
             
-            
         if search_type == "Settings":
             self.clear_console()
             setting = inquirer.select(message="Settings: ", choices=[
@@ -224,6 +293,16 @@ class Cli():
             if setting == "Back":
                 self.menu()
 
+        if search_type == "Accounts":
+            self.clear_console()
+            self.accounts()
+        
+        if search_type == "Update":
+            print(self.version.download_latest_version())
+            sys.exit()
+        
+        if search_type == "Exit":
+            sys.exit()
 
     def advanced_search(self):
         """Shows the advanced search sub-menu"""
@@ -279,11 +358,13 @@ class Cli():
             style=(self.color_neutral if self.movie_postive_votes[i] == self.movie_negative_votes[i] else ("" if self.movie_postive_votes[i] >= self.movie_negative_votes[i] else self.color_bad)))
 
         print(self.movie_table)
+        print(self.help()) 
         self.select_item_from_results()
 
 
     def select_item_from_results(self):
         """Selects an item from the results"""
+         
         selected_movie = inquirer.text(message="~> ").execute()
         commands = ("help", "more", "search", "sort", "menu", "exit")
 
@@ -301,9 +382,11 @@ class Cli():
             else:
                 self.selected_item_options(movie_link, movie_name)
 
-        if selected_movie == "help":
-            self.help()
+        if selected_movie.lower() == "help":
+            print(self.help())
+            self.select_item_from_results()
 
+    
         if selected_movie == "more":
             self.clear_console()
             self.more_results()
@@ -335,10 +418,9 @@ class Cli():
             self.menu()
             # close program
             #sys.exit()
-
+        
         else:
-            print("Invalid input.")
-            print(self.help())
+            print("Invalid input. Type 'help' for available commands.")
             self.select_item_from_results()
         
         
@@ -349,6 +431,10 @@ class Cli():
 
         item_options = inquirer.select(message="Select item options: ", choices=choice_list).execute()
         
+        movie_name = self.sanitize_filename(movie_name)
+        # filter the movie_name to remove special characters from the filename
+        #movie_name = ''.join(e for e in movie_name if e.isalnum() or e == ' ')
+
         if item_options == "Download":
             filename = inquirer.text(message="Filename: ", default=movie_name).execute()
             self.rp.download(filename, movie_link)
@@ -589,17 +675,24 @@ class Cli():
         self.result_list = self.bc.search(self.query_dict)
         self.list_results(self.query_dict["what"], self.query_dict["sort"])
 
+ 
     def help(self):
         """Shows available commands and their description when browsing results"""
-        help_message = "Select movie by typing the # (number) of the movie. \
-        \n'[b]more[/]' for more results. \
-        \n'[b]search \[query][/]' for extensive search. \
-        \n'[b]sort \[type][/]' for sorting type. (largest, smallest, rating, recent, blank [i][b]= 'sort '[/] for relevance \
-        \n'[b]menu[/]' for main menu. \
-        \n'[b]exit[/]' to exit."
+        help_message = ("Select movie by typing the # (number) of the movie.\n"
+         "'[b]more[/]' for more results.\n"
+         "'[b]search [query][/]' for extensive search.\n"
+         "'[b]sort [type][/]' for sorting type. (largest, smallest, rating, recent, blank [i][b]= 'sort '[/] for relevance\n"
+         "'[b]menu[/]' for main menu.\n"
+         "'[b]exit[/]' to exit.")
 
         return help_message
  
+ 
+    def sanitize_filename(self, filename):
+        invalid_chars = r'[\/:*?"<>|]'
+        sanitized_filename = re.sub(invalid_chars, '', filename)
+        return sanitized_filename
+
 
 if __name__ == '__main__':
     os.system(f"title BetterCinema {VersionHandler().version}")
