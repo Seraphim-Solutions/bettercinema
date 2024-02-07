@@ -1,4 +1,4 @@
-# We are looking for a logo and icon. If you are interested please contact us at Discord (Danni#2185) or email danny@seraphim-solutions.com
+# We are looking for a logo and icon. If you are interested please contact us at business@seraphim-solutions.com
 
 
 # BetterCinema
@@ -98,4 +98,6 @@ This part is quite self-explanatory, to select a specific movie just type the in
 
 For more options when browsing the result table, type `help`. 
 
-## Have any suggestions? Use [Discussion](https://github.com/Seraphim-Solutions/bettercinema/discussions/categories/ideas) or contact me on Discord Danni#1965
+## Have any questions? Use [Discussion](https://github.com/Seraphim-Solutions/bettercinema/discussions/new?category=q-a).
+## Do you have any idea for a feature? Use [This template](https://github.com/Seraphim-Solutions/bettercinema/issues/new?assignees=&labels=&projects=&template=feature_request.md&title=%5BFeature+Request%5D+).
+## Do you want to report a bug? Use [This template](https://github.com/Seraphim-Solutions/bettercinema/issues/new?assignees=&labels=&projects=&template=bug_report.md&title=%5BBug%5D+).

@@ -1,4 +1,0 @@
-InquirerPy
-requests
-rich
-xmltodict
