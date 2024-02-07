@@ -1,5 +1,4 @@
 # from textwrap import wrap
-from time import sleep
 import os
 import hashlib
 import json
@@ -208,8 +207,7 @@ class Cli():
         else:
             username, password = list(self.user_dict.keys())[0], list(self.user_dict.values())[0]
             self.get_wst(username, password)
-            print(username, password)
-            sleep(2)
+
 
         if username not in self.user_dict.keys():
             salt = self.get_salt(username)
