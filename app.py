@@ -198,7 +198,7 @@ class Cli():
             salt = self.get_salt(username)
             self.get_wst(username, self.get_password_hash(password, salt))
 
-        if len(self.user_dict) > 1:
+        elif len(self.user_dict) > 1:
             username, password = self.stored_account()
             self.username = username
             self.clear_console()
