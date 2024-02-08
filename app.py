@@ -243,15 +243,17 @@ class Cli():
         new_version = True if self.version.version != self.version.get_version() else False 
         print(f"[{self.color_warning}]New version available: {self.version.get_version()}[/]") if new_version else None
         print(f"[{'blink ' + self.color_banner if self.config['banner']['animation'] == 1 else self.color_banner}]{self.config['banner']['text']}[/]\n          🎬 [i]DanniSec's & Trivarialthea's Project[/] 🎬\n")
-        search_type = inquirer.select(message="Options: ", choices=[
+        choices = [
             "Default Search",
             "Advanced Search",
             "Open Link",
-            Choice("Trakt.tv", "Trakt.tv [Beta]"), # removed untill done
+            Choice("Trakt.tv", "Trakt.tv [Beta]"),
             "Settings",
             "Accounts",
-            Choice("Update", "Update BetterCinema") if new_version else None,
-            "Exit"],
+            "Exit"]
+        
+        choices.insert(-1, "Update") if new_version else None
+        search_type = inquirer.select(message="Options: ", choices=choices,
             default="Default Search").execute()
         
         if search_type == "Default Search":
