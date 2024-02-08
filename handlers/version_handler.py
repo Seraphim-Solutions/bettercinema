@@ -7,7 +7,7 @@ import requests
 class VersionHandler:
     """Handle BetterCinema Version and updates"""
     def __init__(self):
-        self.version = "v1.2.3a"
+        self.version = "v1.2.3b"
         url = "https://api.github.com/repos/Seraphim-Solutions/bettercinema/releases/latest"
         self.response = requests.get(url, timeout=10).json()
 
