@@ -415,11 +415,7 @@ class Cli():
             self.menu()
         
         if selected_movie == "exit":
-            self.clear_console()
-            # go back to main menu
-            self.menu()
-            # close program
-            #sys.exit()
+            sys.exit()
         
         else:
             print("Invalid input. Type 'help' for available commands.")
@@ -598,7 +594,6 @@ class Cli():
         
         if options == "exit":
             self.clear_console()
-            # close program
             sys.exit()
 
         else:
@@ -685,7 +680,7 @@ class Cli():
          "'[b]search [query][/]' for extensive search.\n"
          "'[b]sort [type][/]' for sorting type. (largest, smallest, rating, recent, blank [i][b]= 'sort '[/] for relevance\n"
          "'[b]menu[/]' for main menu.\n"
-         "'[b]exit[/]' to exit.")
+         "'[b]exit[/]' to exit the application.")
 
         return help_message
  
