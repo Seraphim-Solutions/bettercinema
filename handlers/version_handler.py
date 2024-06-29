@@ -2,15 +2,18 @@
 import platform
 import re
 import requests
-
+import sys
 
 class VersionHandler:
     """Handle BetterCinema Version and updates"""
     def __init__(self):
-        self.version = "v1.2.3b"
+        self.version = "v1.2.4"
         url = "https://api.github.com/repos/Seraphim-Solutions/bettercinema/releases/latest"
         self.response = requests.get(url, timeout=10).json()
-
+        if "message" in self.response:
+            sys.tracebacklimit = 0
+            raise Exception(self.response["message"])
+        
     def get_version(self):
         """Get BetterCinema latest version"""
         latest_tag = self.response['tag_name']
@@ -18,11 +21,10 @@ class VersionHandler:
 
     def check_version(self):
         """Check BetterCinema version"""
-        latest_tag = self.response['tag_name']
-        if latest_tag == self.version:
+        if self.get_version == self.version:
             return "You are running the latest version."
         else:
-            print(f"Version {latest_tag} available.")
+            print(f"Version {self.get_version} available.")
             return self.get_latest_version()
 
     def get_latest_version(self):

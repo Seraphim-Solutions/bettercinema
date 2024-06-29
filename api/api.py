@@ -79,3 +79,31 @@ class BetterCinemaAPI():
 
         link = xml.find('link').text
         return link
+
+    def get_vip_status(self, wst):
+        has_vip = False
+        url = "https://webshare.cz/api/user_data/"
+
+        payload = f"wst={wst}"
+        headers = {
+        'Accept': 'text/xml; charset=UTF-8',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        xml = ET.fromstring(response.text)
+        if not xml.find('status').text == 'OK':
+            return "403"
+        vip = xml.find('vip').text
+        if vip == '1':
+            has_vip = True
+        if has_vip:
+            vip_days = xml.find('vip_days').text
+            vip_hours = xml.find('vip_hours').text
+            vip_minutes = xml.find('vip_minutes').text
+            vip_until = xml.find('vip_until').text
+            return vip_days, vip_hours, vip_minutes, vip_until
+        else:
+            return None
